@@ -1,4 +1,4 @@
-# GESTURE v4.4 — Stable Release
+# GESTURE v4.9 — Stable Release
 
 GESTURE is a browser-native motion-to-mark Field Instrument. It records not only where movement goes, but how it happens: speed, hesitation, acceleration, jerk, repetition, rhythm, pressure, direction, curvature, and supported physical motion signals.
 
@@ -112,3 +112,84 @@ v4.4 promotes visual trace controls into first-class settings.
 - Canvas/background color
 
 Appearance settings are stored per gesture. Width mappings remain active, but generated widths are clamped between the configured minimum and maximum thickness. Echo trails use the secondary color and secondary opacity. Scene/layer rendering, animation preview, SVG, PNG, and animated scene SVGs now preserve the configured primary trace color and opacity more consistently.
+
+
+## Camera Targeting — v4.5
+
+Camera Mode now uses an explicit target workflow:
+
+1. Select **Camera** to start preview.
+2. Tap the object or colored marker in the preview.
+3. GESTURE samples the local color and switches to **Color Target**.
+4. Press **LOCK TARGET**.
+5. Press **RECORD**.
+6. Press **STOP & SAVE** when finished.
+
+The marker is labeled **TRACKED POINT** and reports confidence:
+- red = low
+- amber = moderate
+- green = strong
+
+Color Target is now the default camera tracker. When locked, tracking is biased toward the previously tracked neighborhood to reduce jumps to similar-colored objects elsewhere in frame. Bright Point and Motion Centroid remain available for special cases.
+
+
+## Camera preview + export fixes — v4.6
+
+- Camera preview can now be minimized and restored.
+- After **STOP & SAVE**, the camera preview automatically hides while the camera stream remains available for a quick restart.
+- Switching away from Camera hides the preview.
+- SVG export now reports success or a specific preflight/runtime error instead of failing silently.
+- Easy Mode's **EXPORT SVG** button uses the same validated export path.
+
+
+
+## LIVE DRAW fix — v4.7
+
+LIVE is now source-aware instead of being a blind on/off flag.
+
+- Pointer starts immediately and reports incoming sample rate.
+- Camera LIVE requires a ready camera and, for Color Target, a locked target.
+- Sensor LIVE requests sensor permission before claiming LIVE is active.
+- Unsupported/non-live sources do not enter LIVE.
+- A **LIVE INPUT** readout reports source, approximate sample rate, and active window sample count.
+- A watchdog reports when LIVE is armed but no samples are arriving.
+- The UI label is now **LIVE DRAW** / **START LIVE DRAW** to better communicate the feature.
+
+
+## Thickness fix — v4.8
+
+The Thickness control now affects every visual trace style.
+
+Previously, INK, RIBBON, SEISMIC, and ECHO used the gesture base width, but PULSE, PLOTTER preview, CONSTELLATION, SKELETON, NOTATION, and several decorative strokes used fixed widths. In LIVE DRAW, Recipe style parameters could also overwrite the manual thickness value every frame.
+
+v4.8 changes that behavior:
+
+- Manual Thickness is the authoritative base trace weight.
+- INK/RIBBON can still vary width dynamically around the base.
+- PULSE baseline and node outlines scale from Thickness.
+- PLOTTER preview follows Thickness unless Plotter Safe is explicitly enabled, where physical pen width remains authoritative.
+- CONSTELLATION lines and node outlines scale from Thickness.
+- SKELETON line and nodes scale from Thickness.
+- NOTATION baseline scales from Thickness.
+- LIVE DRAW Recipes no longer overwrite manually chosen appearance settings.
+
+
+## Playback Video Export — v4.9
+
+v4.9 adds a dedicated **EXPORT PLAYBACK VIDEO** workflow that records the actual playback rendering rather than generating a simplified scene animation.
+
+Options include:
+- Canvas / 720p / 1080p resolution
+- 24 / 30 / 60 FPS
+- Full Trail / Head Only / Window playback modes
+- Canvas / transparent / black / white background
+- Lead-in and hold-at-end durations
+- Optional loop
+- Optional ping-pong
+- Optional event markers
+- Optional playback head
+- Optional camera preview
+
+The output format is WebM using the browser-native `canvas.captureStream()` and `MediaRecorder` path. Browser support varies; GESTURE reports when the current browser cannot record WebM.
+
+This is separate from **Scene WebM**, which exports the generated scene animation.
