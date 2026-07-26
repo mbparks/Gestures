@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>GESTURE v5.0 — Motion Instrument</title>
+<title>GESTURE v5.5 — Motion Instrument</title>
 <style>
 :root{
   --bg:#0c0f12; --panel:#11161b; --panel2:#171d23; --line:#2b343d; --text:#eef3f7; --muted:#95a3af;
@@ -58,6 +58,10 @@ kbd,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 #timeline{width:100%;height:100%;display:block;cursor:crosshair}
 .workflow{grid-column:1 / 4;background:var(--panel);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);gap:1px}
 .workflow .step{display:grid;place-items:center;font:11px ui-monospace;color:var(--muted);border-right:1px solid var(--line)}
+.workflow button.step{appearance:none;font:inherit;cursor:pointer;color:inherit;background:transparent}
+.workflow button.step:hover{background:color-mix(in srgb,var(--accent) 8%,var(--panel));color:var(--text)}
+.workflow button.step:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+
 .workflow .step.current{color:var(--text);background:color-mix(in srgb,var(--accent) 13%,transparent)}
 .metric{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;font-size:12px;margin:5px 0}
 .metric-bar{grid-column:1 / 3;height:6px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
@@ -132,7 +136,7 @@ details .content{padding:0 10px 10px}
 
 
 .source-list button.source-active{background:var(--accent);border-color:var(--accent);color:#fff}
-.source-status{font:10px ui-monospace;color:var(--muted);margin-top:6px;line-height:1.35}
+.source-status{font:10px ui-monospace;color:var(--muted);margin-top:6px;line-height:1.35}.section-note{font:9px ui-monospace;color:var(--muted);line-height:1.35;margin:-2px 0 7px}
 .camera-stage{position:absolute;right:12px;bottom:12px;width:min(280px,34%);aspect-ratio:4/3;z-index:5;border:1px solid var(--line);background:#000;box-shadow:var(--shadow);overflow:hidden;border-radius:6px}
 .camera-stage.hidden{display:none}.camera-stage video,.camera-stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.camera-stage canvas{pointer-events:auto;cursor:crosshair}.camera-track-label{position:absolute;left:8px;top:8px;z-index:3;font:9px ui-monospace;padding:3px 5px;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 85%,transparent);color:var(--muted);pointer-events:none}.camera-track-label.locked{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 60%,var(--line))}
 .camera-stage-controls{position:absolute;right:6px;top:6px;z-index:4;display:flex;gap:4px}
@@ -174,7 +178,9 @@ details .content{padding:0 10px 10px}
 .trace-appearance label{font-size:10px;color:var(--muted)}
 .trace-appearance input[type="color"]{width:100%;height:34px;padding:2px;cursor:pointer}
 .trace-appearance .wide{grid-column:1/3}
-.trace-palette{display:flex;gap:5px;flex-wrap:wrap}
+.trace-palette{display:flex;gap:5px;flex-wrap:wrap}.trace-swatch.active{outline:2px solid var(--accent);outline-offset:2px}
+.trace-custom{height:28px;padding:0 9px;font-size:9px}
+.hidden-color-picker{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
 .trace-swatch{width:25px;height:25px;border-radius:50%;padding:0;border:2px solid var(--line)}
 .trace-swatch:hover{transform:scale(1.08)}
 @media(max-width:680px){.trace-appearance{grid-template-columns:1fr 1fr}.trace-appearance input[type="range"]{width:100%}}
@@ -213,6 +219,13 @@ details.focus-hidden{display:none}
 
 .release-stable{color:var(--ok);font-weight:700}
 .preflight-list{display:grid;gap:4px}.preflight-item{display:grid;grid-template-columns:18px 1fr;gap:6px;font:10px ui-monospace}.preflight-item.ok b{color:var(--ok)}.preflight-item.warn b{color:var(--warn)}.preflight-item.fail b{color:var(--danger)}
+.action-toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);z-index:120;max-width:min(560px,calc(100vw - 28px));padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:var(--panel);box-shadow:var(--shadow);font:11px ui-monospace;opacity:0;pointer-events:none;transition:.18s ease}
+.action-toast.show{opacity:1;transform:translate(-50%,0)}
+.action-toast.ok{border-color:color-mix(in srgb,var(--ok) 55%,var(--line))}
+.action-toast.warn{border-color:color-mix(in srgb,var(--warn) 65%,var(--line))}
+.action-toast.fail{border-color:color-mix(in srgb,var(--danger) 65%,var(--line))}
+@media(max-width:680px){.action-toast{bottom:72px;border-radius:10px;text-align:center}}
+
 button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
 
 .mobile-nav,.mobile-record-dock{display:none}
@@ -237,7 +250,24 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   .empty-hint strong{font-size:22px}.empty-hint{font-size:12px;padding:24px}
   .camera-stage{width:min(72vw,360px);right:7px;bottom:72px}
 
-  .sidebar,.rightbar{position:fixed!important;left:0;right:0;bottom:58px;z-index:20;max-height:min(48dvh,430px);background:var(--panel);border:1px solid var(--line)!important;border-left:0!important;border-right:0!important;border-radius:14px 14px 0 0;box-shadow:0 -18px 40px rgba(0,0,0,.35);overflow:auto!important;display:none!important;padding-top:5px}
+  
+.tool-shell-head{position:sticky;top:0;z-index:9;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;background:var(--panel);border-bottom:1px solid var(--line)}
+.tool-shell-head>div{display:grid;gap:1px}.tool-shell-head b{font:10px ui-monospace;letter-spacing:.12em}.tool-shell-head span{font:9px ui-monospace;color:var(--muted)}
+.tool-shell-head button{font-size:9px;padding:5px 8px}
+.sidebar,.rightbar{scrollbar-gutter:stable}
+.sidebar .section,.rightbar .section,.rightbar details{transition:opacity .15s ease}
+body.tool-filter-active .sidebar [data-tool-stage]{display:none!important}
+body.tool-filter-active .sidebar [data-tool-stage].tool-stage-active{display:block!important}
+body.tool-filter-active .rightbar details[data-tool-stage]{display:none!important}
+body.tool-filter-active .rightbar details[data-tool-stage].tool-stage-active{display:block!important}
+body.tool-filter-active .rightbar .section[data-inspector]{display:block!important}
+body.tool-show-all .sidebar [data-tool-stage],body.tool-show-all .rightbar [data-tool-stage],body.tool-show-all .rightbar [data-inspector]{display:block!important}
+body.tool-show-all .sidebar,body.tool-show-all .rightbar{overflow:auto!important}
+@media(max-width:680px){
+  .tool-shell-head{position:sticky;top:0}
+  body.mobile-panel-open .tool-shell-head{display:flex!important}
+}
+.sidebar,.rightbar{position:fixed!important;left:0;right:0;bottom:58px;z-index:20;max-height:min(48dvh,430px);background:var(--panel);border:1px solid var(--line)!important;border-left:0!important;border-right:0!important;border-radius:14px 14px 0 0;box-shadow:0 -18px 40px rgba(0,0,0,.35);overflow:auto!important;display:none!important;padding-top:5px}
   body.mobile-panel-open.mobile-left .sidebar{display:block!important}
   body.mobile-panel-open.mobile-right .rightbar{display:block!important}
   body.mobile-panel-open .canvas-wrap{filter:brightness(.82)}
@@ -305,20 +335,24 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">GESTURE</div><div class="version">v5.0</div>
-  <div class="project-name" id="projectTitle">Untitled Project</div><span class="badge">CONTROL FIX</span><button id="undoBtn" title="Undo processed/project change">↶</button><button id="redoBtn" title="Redo processed/project change">↷</button>
+  <div class="brand">GESTURE</div><div class="version">v5.5</div>
+  <div class="project-name" id="projectTitle">Untitled Project</div><span class="badge">WORKFLOW SHELL</span><button id="undoBtn" title="Undo processed/project change">↶</button><button id="redoBtn" title="Redo processed/project change">↷</button>
   <div class="spacer"></div>
   <div class="save" id="saveStatus"><span class="save-dot"></span><span>Saved</span></div>
-  <button id="liveBtn" title="Immediate motion-to-mark mode">LIVE DRAW</button><div class="mode-toggle"><button id="easyBtn" class="active">EASY</button><button id="advBtn">ADV</button></div>
+  <button id="liveBtn" title="Open LIVE controls">LIVE TOOLS</button><div class="mode-toggle"><button id="easyBtn" class="active">EASY</button><button id="advBtn">ADV</button></div>
   <button id="themeBtn" title="Toggle light/dark">◐</button>
 </header>
 
 <main class="app">
   <aside class="sidebar">
-    <section class="section">
+    <div class="tool-shell-head">
+      <div><b>WORKFLOW TOOLS</b><span id="leftToolContext">CAPTURE</span></div>
+      <button id="showAllTools" title="Show all workflow tools">ALL TOOLS</button>
+    </div>
+    <section class="section" data-tool-stage="capture">
       <h3>Capture</h3>
       <div class="source-list">
-        <button id="sourcePointer" data-source="pointer" class="source-active">Pointer</button><button id="sourceMulti" data-source="multitouch">Multi</button><button id="sourceCamera" data-source="camera">Camera</button><button id="sourceSensor" data-source="sensor">Sensor</button><button id="sourceImport" data-source="import">Import</button><button id="sourceLive" data-source="live">Live</button>
+        <button id="sourcePointer" data-source="pointer" class="source-active">Pointer</button><button id="sourceMulti" data-source="multitouch">Multi</button><button id="sourceCamera" data-source="camera">Camera</button><button id="sourceSensor" data-source="sensor">Sensor</button><button id="sourceImport" data-source="import">Import Motion</button>
       </div>
       <div id="sourceStatus" class="source-status">Pointer input · mouse, touch, or stylus pressure.</div>
       <div style="height:8px"></div>
@@ -327,17 +361,17 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <input type="file" id="motionDataFile" accept=".csv,.json,text/csv,application/json" class="hidden">
     </section>
 
-    <section class="section easy-only">
+    <section class="section easy-only" data-tool-stage="stylize">
       <h3>Style</h3>
       <div class="preset-grid">
         <button data-style="ink" class="active">INK</button><button data-style="ribbon">RIBBON</button><button data-style="plotter">PLOTTER</button><button data-style="pulse">PULSE</button><button data-style="skeleton">SKELETON</button><button data-style="constellation">CONSTELLATION</button><button data-style="seismic">SEISMIC</button><button data-style="echo">ECHO</button><button data-style="notation">NOTATION</button>
       </div>
       <div class="trace-appearance">
-        <label>Trace color<input id="easyTraceColor" type="color" value="#111111"></label>
         <label>Opacity <output id="easyTraceOpacityOut">100%</output><input id="easyTraceOpacity" type="range" min="5" max="100" value="100"></label>
         <label class="wide">Thickness <output id="easyTraceWidthOut">4.0 px</output><input id="easyTraceWidth" type="range" min=".5" max="24" step=".5" value="4"></label>
         <div class="wide source-status">Thickness sets the base trace weight. Dynamic styles may vary around it.</div>
       </div>
+      <div class="mini-label" style="margin-top:7px">TRACE COLOR</div>
       <div class="trace-palette" id="tracePaletteEasy">
         <button class="trace-swatch" data-trace-color="#111111" style="background:#111111" title="Black"></button>
         <button class="trace-swatch" data-trace-color="#ffffff" style="background:#ffffff" title="White"></button>
@@ -347,16 +381,18 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
         <button class="trace-swatch" data-trace-color="#06d6a0" style="background:#06d6a0" title="Green"></button>
         <button class="trace-swatch" data-trace-color="#118ab2" style="background:#118ab2" title="Blue"></button>
         <button class="trace-swatch" data-trace-color="#8338ec" style="background:#8338ec" title="Violet"></button>
+        <button id="easyTraceCustom" class="trace-custom">CUSTOM…</button>
+        <input id="easyTraceColor" type="color" value="#111111" class="hidden-color-picker" aria-label="Custom trace color">
       </div>
       <div style="height:8px"></div>
-      <div class="easy-flow">1 · RECORD A MOVEMENT<br>2 · AUTO INTERPRET OR CHOOSE A STYLE<br>3 · EXPORT THE MARK</div>
+      <div class="easy-flow">1 · RECORD A MOVEMENT<br>2 · AUTO INTERPRET OR CHOOSE A STYLE<br>3 · EXPORT THE MARK OR PLAYBACK VIDEO</div>
       <div style="height:7px"></div>
       <button id="autoInterpret" class="full">AUTO INTERPRET</button>
       <div style="height:5px"></div>
       <button id="easyExport" class="full primary">EXPORT SVG</button>
     </section>
 
-    <section class="section">
+    <section class="section" data-tool-stage="library">
       <h3>Gesture Library</h3>
       <div class="library-tools">
         <div class="library-row"><input id="librarySearch" placeholder="Search name, tag, source"><select id="librarySort"><option value="newest">Newest</option><option value="name">Name</option><option value="duration">Duration</option><option value="character">Character</option></select></div>
@@ -370,7 +406,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     </section>
 
     <section class="section">
-      <h3>LIVE</h3>
+      <h3>LIVE</h3><div class="section-note">START LIVE DRAW is the single LIVE start/stop control. LIVE TOOLS only opens this panel.</div>
       <div class="live-panel stack">
         <button id="liveToggle" class="full">START LIVE DRAW</button>
         <div class="live-controls"><button id="performanceMode">PERFORMANCE VIEW</button><button id="freezeLive">FREEZE</button><button id="clearLive">CLEAR</button><button id="saveLiveTake">SAVE WINDOW</button><button id="savePerformance">SAVE PERFORMANCE</button><button id="livePrevRecipe">← RECIPE</button><button id="liveNextRecipe">RECIPE →</button><button id="liveFadeToggle">FADE ON</button></div>
@@ -386,7 +422,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <h3>Project</h3>
       <div class="toolbar">
         <button id="newProject">New</button><button id="renameProject">Rename</button><button id="deleteProject" class="danger">Delete</button>
-        <button id="saveProject">Save JSON</button><button id="importProjectBtn">Import JSON</button><button id="mergeProjectBtn">Merge JSON</button><button id="recoverProject">Recover Previous</button><button id="repairProjectBtn">Repair State</button><button id="loadSamples">Load Samples</button>
+        <button id="saveProject">Export Project JSON</button><button id="importProjectBtn">Import JSON</button><button id="mergeProjectBtn">Merge JSON</button><button id="recoverProject">Recover Previous</button><button id="repairProjectBtn">Repair State</button><button id="loadSamples">Load Samples</button>
       </div>
       <input type="file" id="projectFile" accept=".json,application/json" class="hidden"><input type="file" id="mergeProjectFile" accept=".json,application/json" class="hidden">
     </section>
@@ -409,19 +445,23 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   </section>
 
   <aside class="rightbar">
-    <section class="section">
+    <div class="tool-shell-head">
+      <div><b>INSPECTOR</b><span id="rightToolContext">MOTION</span></div>
+      <button id="resetToolView" title="Restore the default tool layout">RESET VIEW</button>
+    </div>
+    <section class="section" data-inspector="motion">
       <h3>Motion Character</h3>
       <div id="characterMetrics"></div>
       <div id="characterConfidence" class="character-confidence">Analysis confidence —</div>
       <div class="char-note">Descriptive, not evaluative. Similar paths can carry very different motion character. Confidence describes evidence quality, not gesture quality.</div>
     </section>
 
-    <section class="section">
+    <section class="section" data-inspector="summary">
       <h3>Summary</h3>
       <div id="kpis" class="kpi-grid"></div>
     </section>
 
-    <section class="section advanced-only">
+    <section class="section advanced-only" data-inspector="quality">
       <h3>Capture Quality</h3>
       <div class="capture-quality"><span id="qualityLabel">No capture</span><b id="qualityScore">—</b><div class="quality-bar"><i id="qualityBar" style="width:0%"></i></div></div>
       <div id="diagnosticGrid" class="diag-grid" style="margin-top:7px"></div>
@@ -464,18 +504,18 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
           <div class="char-note" style="margin-top:7px">Advanced Mode can expose the whole instrument or only the controls relevant to the current task.</div>
         </div>
       </details>
-      <details>
-        <summary>Physical / Imported Motion</summary>
+      <details data-tool-stage="capture">
+        <summary>Physical Motion Setup</summary>
         <div class="content stack">
-          <div class="toolbar"><button id="importMotionBtn">Import CSV / JSON</button><button id="requestSensor">Enable Sensors</button><button id="startCamera">Start Preview</button><button id="stopCamera">Stop Camera</button></div>
-          <div class="row"><select id="cameraTracker"><option value="color" selected>Color Target</option><option value="light">Bright Point</option><option value="motion">Motion Centroid</option></select><button id="sampleCameraColor">Sample Center</button><button id="lockCameraTarget">LOCK TARGET</button></div>
-          <div class="source-status"><b>CAMERA FLOW</b> · Preview → tap target → Lock Target → Record</div>
+          <div class="toolbar"><button id="stopCamera">Stop Camera</button></div>
+          <div class="row"><select id="cameraTracker"><option value="color" selected>Color Target</option><option value="light">Bright Point</option><option value="motion">Motion Centroid</option></select><button id="lockCameraTarget">LOCK TARGET</button></div>
+          <div class="source-status"><b>CAMERA FLOW</b> · Select Camera → tap target → Lock Target → Record</div>
           <div id="cameraTargetStatus" class="signal-readout">TRACKED POINT · color target not selected · confidence —</div>
           <div id="signalReadout" class="signal-readout">No physical source active.</div>
           <div class="char-note">Sensor capture is treated as motion signal data. GESTURE does not claim accelerometer data alone reconstructs precise absolute spatial position.</div>
         </div>
       </details>
-      <details>
+      <details data-tool-stage="capture">
         <summary>PATH vs CHARACTER</summary>
         <div class="content stack">
           <div class="segmented" id="previewMode"><button data-preview="geometry">GEOMETRY</button><button data-preview="constant">CONSTANT SPEED</button><button data-preview="full" class="active">FULL CHARACTER</button></div>
@@ -503,7 +543,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
         </div>
       </details>
 
-      <details>
+      <details data-tool-stage="compose">
         <summary>Layers</summary>
         <div class="content stack">
           <label><input id="layersEnabled" type="checkbox"> Render scene as layers</label>
@@ -513,7 +553,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
         </div>
       </details>
 
-      <details>
+      <details data-tool-stage="compose">
         <summary>Composition</summary>
         <div class="content stack">
           <label><input id="compositionEnabled" type="checkbox"> Enable composition</label>
@@ -531,7 +571,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
         </div>
       </details>
 
-      <details>
+      <details data-tool-stage="compose">
         <summary>Animation</summary>
         <div class="content stack animation-box">
           <div class="v3-grid">
@@ -544,27 +584,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
           <div class="toolbar"><button id="previewAnimation">Preview</button><button id="stopAnimationPreview">Stop</button><button id="exportAnimatedSvg">Animated SVG</button><button id="exportWebM">Scene WebM</button></div>
           <div class="anim-preview-bar"><i id="animationProgress"></i></div>
           <div id="animationStatus" class="status">Animation exports the current CROSS MAP / Layers / Composition scene.</div>
-          <div class="divider"></div>
-          <div class="mini-label">PLAYBACK VIDEO</div>
-          <div class="v3-grid">
-            <label>Resolution<select id="playbackVideoResolution"><option value="canvas">Canvas 1000×700</option><option value="720">720p</option><option value="1080" selected>1080p</option></select></label>
-            <label>FPS<select id="playbackVideoFps"><option>24</option><option selected>30</option><option>60</option></select></label>
-            <label>Mode<select id="playbackVideoMode"><option value="trail" selected>Full Trail</option><option value="head">Head Only</option><option value="window">Window</option></select></label>
-            <label>Background<select id="playbackVideoBackground"><option value="canvas" selected>Canvas Color</option><option value="transparent">Transparent</option><option value="black">Black</option><option value="white">White</option></select></label>
-            <label>Lead in (s)<input id="playbackLeadIn" type="number" min="0" max="10" step=".25" value=".5"></label>
-            <label>Hold end (s)<input id="playbackHoldEnd" type="number" min="0" max="10" step=".25" value=".75"></label>
-          </div>
-          <label><input id="playbackVideoLoop" type="checkbox"> Loop once</label>
-          <label><input id="playbackVideoPingPong" type="checkbox"> Ping Pong</label>
-          <label><input id="playbackVideoEvents" type="checkbox"> Include event markers</label>
-          <label><input id="playbackVideoHead" type="checkbox" checked> Include playback head</label>
-          <label><input id="playbackVideoCamera" type="checkbox"> Include camera preview</label>
-          <div class="toolbar"><button id="exportPlaybackVideo" class="primary">EXPORT PLAYBACK VIDEO</button><button id="cancelPlaybackVideo">Cancel</button></div>
-          <div id="playbackVideoStatus" class="status">Records the actual playback rendering to WebM.</div>
+
         </div>
       </details>
 
-      <details>
+      <details data-tool-stage="inspect">
         <summary>Compare Mode</summary>
         <div class="content stack">
           <label><input id="compareEnabled" type="checkbox"> Enable two-gesture comparison</label>
@@ -588,7 +612,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
           <div class="char-note">Geometry scale changes the path size. Motion scale changes interpreted motion magnitude without changing path geometry.</div>
         </div>
       </details>
-      <details open>
+      <details open data-tool-stage="simplify">
         <summary>Simplify</summary>
         <div class="content stack">
           <label class="control"><span>RAW ← → ESSENCE</span><output id="essenceOut">20%</output><input id="essence" type="range" min="0" max="100" value="20"></label>
@@ -597,11 +621,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
         </div>
       </details>
 
-      <details open>
+      <details open data-tool-stage="stylize">
         <summary>Stylize</summary>
         <div class="content stack">
           <div class="trace-appearance">
-            <label>Primary color<input id="traceColor" type="color" value="#111111"></label>
             <label>Trace opacity <output id="traceOpacityOut">100%</output><input id="traceOpacity" type="range" min="5" max="100" value="100"></label>
             <label>Base thickness <output id="widthOut">4.0 px</output><input id="baseWidth" type="range" min=".5" max="24" step=".5" value="4"></label>
             <label>Minimum thickness <output id="minWidthOut">0.5 px</output><input id="minTraceWidth" type="range" min=".25" max="12" step=".25" value=".5"></label>
@@ -610,6 +633,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
             <label>Secondary opacity <output id="secondaryOpacityOut">55%</output><input id="secondaryTraceOpacity" type="range" min="0" max="100" value="55"></label>
             <label>Canvas color<input id="canvasColor" type="color" value="#ffffff"></label>
           </div>
+          <div class="mini-label">TRACE COLOR</div>
           <div class="trace-palette" id="tracePaletteAdvanced">
             <button class="trace-swatch" data-trace-color="#111111" style="background:#111111" title="Black"></button>
             <button class="trace-swatch" data-trace-color="#ffffff" style="background:#ffffff" title="White"></button>
@@ -619,6 +643,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
             <button class="trace-swatch" data-trace-color="#06d6a0" style="background:#06d6a0" title="Green"></button>
             <button class="trace-swatch" data-trace-color="#118ab2" style="background:#118ab2" title="Blue"></button>
             <button class="trace-swatch" data-trace-color="#8338ec" style="background:#8338ec" title="Violet"></button>
+            <button id="traceCustom" class="trace-custom">CUSTOM…</button>
+            <input id="traceColor" type="color" value="#111111" class="hidden-color-picker" aria-label="Custom trace color">
           </div>
           <label class="control"><span>Effect strength</span><output id="strengthOut">65%</output><input id="effectStrength" type="range" min="0" max="100" value="65"></label>
           <div class="preset-grid">
@@ -627,7 +653,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
         </div>
       </details>
 
-      <details>
+      <details data-tool-stage="stylize">
         <summary>Mapping Matrix</summary>
         <div class="content">
           <div class="mapping-head"><span>ON</span><span>INPUT</span><span>OUTPUT</span><span>IN MIN</span><span>IN MAX</span><span>OUT MIN</span><span>OUT MAX</span><span>INV</span><span>CURVE</span><span></span></div>
@@ -649,7 +675,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
         </div>
       </details>
 
-      <details>
+      <details data-tool-stage="simplify">
         <summary>Temporal</summary>
         <div class="content">
           <div class="toolbar">
@@ -697,7 +723,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
         </div>
       </details>
 
-      <details>
+      <details data-tool-stage="system">
         <summary>System Check + Help</summary>
         <div class="content stack">
           <div class="toolbar"><button id="runCompatibility">Browser Check</button><button id="runSelfTest">Project Self-Test</button><button id="runExportPreflight">Export Preflight</button><button id="showQuickStart">Quick Start</button></div>
@@ -706,13 +732,31 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
         </div>
       </details>
 
-      <details>
+      <details data-tool-stage="export">
         <summary>Export</summary>
         <div class="content stack">
           <div class="toolbar">
             <button id="exportSvg">SVG</button><button id="exportOptimizedSvg">Optimized SVG</button><button id="exportFabricationSvg">True-Scale SVG</button><button id="exportDxf">DXF</button><button id="exportHpgl">HPGL</button><button id="exportPng">Transparent PNG</button><button id="exportJson">Motion JSON</button><button id="exportCsv">CSV</button><select id="portraitMode"><option value="single">Portrait: Single</option><option value="compare">Portrait: Compare</option><option value="study">Portrait: Study</option></select><button id="motionPortrait">Motion Portrait</button><button id="importGestureSvgBtn">Import GESTURE SVG</button>
           </div>
           <div id="preflightStatus" class="status">Export ready.</div>
+          <div class="divider"></div>
+          <div class="mini-label">PLAYBACK VIDEO</div>
+          <div class="source-status">Export the actual gesture playback as WebM.</div>
+          <div class="v3-grid">
+            <label>Resolution<select id="playbackVideoResolution"><option value="canvas">Canvas 1000×700</option><option value="720">720p</option><option value="1080" selected>1080p</option></select></label>
+            <label>FPS<select id="playbackVideoFps"><option>24</option><option selected>30</option><option>60</option></select></label>
+            <label>Mode<select id="playbackVideoMode"><option value="trail" selected>Full Trail</option><option value="head">Head Only</option><option value="window">Window</option></select></label>
+            <label>Background<select id="playbackVideoBackground"><option value="canvas" selected>Canvas Color</option><option value="transparent">Transparent</option><option value="black">Black</option><option value="white">White</option></select></label>
+            <label>Lead in (s)<input id="playbackLeadIn" type="number" min="0" max="10" step=".25" value=".5"></label>
+            <label>Hold end (s)<input id="playbackHoldEnd" type="number" min="0" max="10" step=".25" value=".75"></label>
+          </div>
+          <label><input id="playbackVideoLoop" type="checkbox"> Loop once</label>
+          <label><input id="playbackVideoPingPong" type="checkbox"> Ping Pong</label>
+          <label><input id="playbackVideoEvents" type="checkbox"> Include event markers</label>
+          <label><input id="playbackVideoHead" type="checkbox" checked> Include playback head</label>
+          <label><input id="playbackVideoCamera" type="checkbox"> Include camera preview</label>
+          <div class="toolbar"><button id="exportPlaybackVideo" class="primary">EXPORT PLAYBACK VIDEO</button><button id="cancelPlaybackVideo">Cancel</button></div>
+          <div id="playbackVideoStatus" class="status">Records the actual playback rendering to WebM.</div>
           <label><input id="includeMetadata" type="checkbox" checked> Embed GESTURE metadata in SVG</label>
           <label><input id="plotterSafe" type="checkbox"> Plotter-safe SVG</label>
           <input type="file" id="gestureSvgFile" accept=".svg,image/svg+xml" class="hidden">
@@ -735,8 +779,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     <canvas id="timeline"></canvas>
   </section>
 
-  <nav class="workflow">
-    <div class="step" data-step="move">MOVE</div><div class="step current" data-step="capture">CAPTURE</div><div class="step" data-step="simplify">SIMPLIFY</div><div class="step" data-step="stylize">STYLIZE</div><div class="step" data-step="export">EXPORT</div>
+  <nav class="workflow" aria-label="Gesture workflow">
+    <button class="step" data-step="move">MOVE</button><button class="step current" data-step="capture">CAPTURE</button><button class="step" data-step="simplify">SIMPLIFY</button><button class="step" data-step="stylize">STYLIZE</button><button class="step" data-step="export">EXPORT</button>
   </nav>
   <div id="mobileRecordDock" class="mobile-record-dock">
     <button id="mobileClearBtn" class="mobile-clear">CLEAR</button>
@@ -751,6 +795,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     <button data-mobile-panel="more">MORE</button>
   </nav>
 </main>
+<div id="actionToast" class="action-toast" role="status" aria-live="polite"></div>
 
 <div id="quickStartModal" class="hidden" role="dialog" aria-modal="true">
   <div class="portrait-shell">
@@ -777,7 +822,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 (() => {
 'use strict';
 
-const APP_VERSION='5.0';
+const APP_VERSION='5.5';
 const STORAGE_KEY='gesture-field-instrument-v1';
 const RECOVERY_KEY='gesture-field-instrument-recovery-v36';
 const SVG_NS='http://www.w3.org/2000/svg';
@@ -1264,15 +1309,15 @@ const ImportEngine={
 const LiveEngine={
   async toggle(){
     if(state.live.enabled||state.live.starting){if(state.live.enabled)this.stop();return}
-    state.live.starting=true;this.status('starting '+(state.capture.sourceMode||'pointer')+'…');els.liveToggle.textContent='STARTING…';els.liveBtn.classList.add('live-on');
+    state.live.starting=true;this.status('starting '+(state.capture.sourceMode||'pointer')+'…');els.liveToggle.textContent='STARTING…';
     const ok=await this.ensureSourceReady();
     state.live.starting=false;
-    if(!ok){els.liveToggle.textContent='START LIVE DRAW';els.liveBtn.classList.remove('live-on');els.liveToggle.classList.remove('live-on');setStateLabel('LIVE NOT READY');return}
+    if(!ok){els.liveToggle.textContent='START LIVE DRAW';els.liveToggle.classList.remove('live-on');setStateLabel('LIVE NOT READY');return}
     state.live.enabled=true;state.live.startTime=performance.now();state.live.frozen=false;state.live.samples=[];state.live.fullSamples=[];state.live.lastInputAt=0;state.live.inputCount=0;state.live.inputRate=0;this.syncRecipe();
-    els.liveBtn.classList.add('live-on');els.liveToggle.classList.add('live-on');els.liveToggle.textContent='EXIT LIVE';setStateLabel('LIVE');this.status('armed · waiting for '+(state.capture.sourceMode||'pointer')+' input');renderAll()
+    els.liveToggle.classList.add('live-on');els.liveToggle.textContent='EXIT LIVE';setStateLabel('LIVE');this.status('armed · waiting for '+(state.capture.sourceMode||'pointer')+' input');renderAll()
   },
   stop(){
-    state.live.enabled=false;state.live.starting=false;if(state.live.performance)this.performance(false);els.liveBtn.classList.remove('live-on');els.liveToggle.classList.remove('live-on');els.liveToggle.textContent='START LIVE DRAW';setStateLabel('READY');this.status('idle');renderAll()
+    state.live.enabled=false;state.live.starting=false;if(state.live.performance)this.performance(false);els.liveToggle.classList.remove('live-on');els.liveToggle.textContent='START LIVE DRAW';setStateLabel('READY');this.status('idle');renderAll()
   },
   async ensureSourceReady(){
     const mode=state.capture.sourceMode||'pointer';
@@ -1294,24 +1339,24 @@ const LiveEngine={
     state.live.fullSamples.push({...sample});if(state.live.fullSamples.length>200000)state.live.fullSamples.splice(0,1000);state.live.samples.push(sample);
     state.live.inputCount++;if(state.live.lastInputAt){const dt=now-state.live.lastInputAt;if(dt>0)state.live.inputRate=state.live.inputRate*.8+(1000/dt)*.2}state.live.lastInputAt=now;
     const cutoff=sample.t-state.live.windowMs;while(state.live.samples.length>2&&state.live.samples[0].t<cutoff)state.live.samples.shift();
-    this.status(`${sample.source||state.capture.sourceMode} · ${Math.round(state.live.inputRate||0)} Hz · ${state.live.samples.length} samples`);
+    this.status(`${sample.source||state.capture.sourceMode} · ${Math.round(state.live.inputRate||0)} Hz · ${state.live.samples.length} samples`);updateControlStates();
     if(now-state.live.lastRender>30){state.live.lastRender=now;this.render()}
   },
-  pointer(e){if(!state.live.enabled||!['pointer','live'].includes(state.capture.sourceMode))return;const r=els.gestureSvg.getBoundingClientRect(),s={t:performance.now()-state.live.startTime,x:(e.clientX-r.left)/r.width*1000,y:(e.clientY-r.top)/r.height*700,pressure:e.pressure||0,source:e.pointerType||'pointer',confidence:1};this.push(s)},
+  pointer(e){if(!state.live.enabled||state.capture.sourceMode!=='pointer')return;const r=els.gestureSvg.getBoundingClientRect(),s={t:performance.now()-state.live.startTime,x:(e.clientX-r.left)/r.width*1000,y:(e.clientY-r.top)/r.height*700,pressure:e.pressure||0,source:e.pointerType||'pointer',confidence:1};this.push(s)},
   recipe(){return state.project.recipes[state.live.recipeIndex]||state.project.recipes[0]||null},
   syncRecipe(){const r=this.recipe();if(els.liveRecipe&&r)els.liveRecipe.value=r.id;els.performanceRecipe.textContent=(r?.name||selectedGesture()?.style||'INK').toUpperCase()},
   setRecipeById(id){const i=state.project.recipes.findIndex(r=>r.id===id);if(i>=0){state.live.recipeIndex=i;this.syncRecipe();this.render()}},
   stepRecipe(dir){if(!state.project.recipes.length)return;state.live.recipeIndex=(state.live.recipeIndex+dir+state.project.recipes.length)%state.project.recipes.length;this.syncRecipe();this.render()},
   render(){if(state.live.samples.length<2)return;const a=MotionAnalyzer.analyze(state.live.samples),base=selectedGesture(),recipe=this.recipe(),g={id:'live',name:'LIVE',rawSamples:state.live.samples,analysis:a,style:recipe?.style||base?.style||'ink',processing:recipe?.simplify||base?.processing||{essence:5,geoTol:1,motionAware:true},styleParams:{...(recipe?.styleParams||{}),...(base?.styleParams||{baseWidth:4,effectStrength:65})},mappings:recipe?.mappings||base?.mappings||[],spatial:{x:0,y:0,rotate:0,scale:1,motionScale:1,mirrorX:false,mirrorY:false,normalize:'none'}};StyleEngine.render(g,1);els.pathLayer.classList.add('live-trace');if(state.live.fade){const paths=[...els.pathLayer.querySelectorAll('path')],fadeFraction=clamp(state.live.fadeMs/Math.max(1,state.live.windowMs),.03,1);paths.forEach((p,i)=>{const q=i/Math.max(1,paths.length-1),age=1-q,op=age>=fadeFraction?.08:clamp(.08+(1-age/fadeFraction)*.92,.08,1);p.style.opacity=String(op)})}els.performanceSource.textContent=(state.capture.sourceMode||'pointer').toUpperCase();this.syncRecipe()},
   saveWindow(){
-    if(state.live.samples.length<3){this.status(`cannot save window · only ${state.live.samples.length} live sample${state.live.samples.length===1?'':'s'}`);setStateLabel('NOTHING TO SAVE');return}
-    const n=state.live.samples.length;CaptureEngine.commit(state.live.samples.map(p=>({...p,t:p.t-state.live.samples[0].t})),'live','Live Window');this.status(`saved window · ${n} samples`);setStateLabel('LIVE WINDOW SAVED');renderAll()
+    if(state.live.samples.length<3){this.status(`cannot save window · only ${state.live.samples.length} live sample${state.live.samples.length===1?'':'s'}`);setStateLabel('NOTHING TO SAVE');actionFeedback('Nothing to save yet — LIVE WINDOW needs at least 3 samples.','warn');return}
+    const n=state.live.samples.length;CaptureEngine.commit(state.live.samples.map(p=>({...p,t:p.t-state.live.samples[0].t})),'live','Live Window');this.status(`saved window · ${n} samples`);setStateLabel('LIVE WINDOW SAVED');actionFeedback(`Live Window saved · ${n} samples`,'ok');renderAll()
   },
   savePerformance(){
-    if(state.live.fullSamples.length<3){this.status(`cannot save performance · only ${state.live.fullSamples.length} live sample${state.live.fullSamples.length===1?'':'s'}`);setStateLabel('NOTHING TO SAVE');return}
-    const n=state.live.fullSamples.length;CaptureEngine.commit(state.live.fullSamples.map(p=>({...p,t:p.t-state.live.fullSamples[0].t})),'live-performance','Live Performance');this.status(`saved performance · ${n} samples`);setStateLabel('PERFORMANCE SAVED');renderAll()
+    if(state.live.fullSamples.length<3){this.status(`cannot save performance · only ${state.live.fullSamples.length} live sample${state.live.fullSamples.length===1?'':'s'}`);setStateLabel('NOTHING TO SAVE');actionFeedback('Nothing to save yet — PERFORMANCE needs at least 3 LIVE samples.','warn');return}
+    const n=state.live.fullSamples.length;CaptureEngine.commit(state.live.fullSamples.map(p=>({...p,t:p.t-state.live.fullSamples[0].t})),'live-performance','Live Performance');this.status(`saved performance · ${n} samples`);setStateLabel('PERFORMANCE SAVED');actionFeedback(`Performance saved · ${n} samples`,'ok');renderAll()
   },
-  clear(){state.live.samples=[];state.live.fullSamples=[];state.live.startTime=performance.now();els.pathLayer.classList.remove('live-trace');renderAll()},
+  clear(){state.live.samples=[];state.live.fullSamples=[];state.live.startTime=performance.now();els.pathLayer.classList.remove('live-trace');updateControlStates();renderAll()},
   freeze(){state.live.frozen=!state.live.frozen;els.freezeLive.classList.toggle('active',state.live.frozen);els.freezeLive.textContent=state.live.frozen?'UNFREEZE':'FREEZE'},
   performance(force=null){state.live.performance=force===null?!state.live.performance:!!force;document.body.classList.toggle('performance-mode',state.live.performance);if(state.live.performance&&!document.fullscreenElement)document.documentElement.requestFullscreen?.().catch(()=>{});if(!state.live.performance&&document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});els.performanceMode.classList.toggle('active',state.live.performance)},
   setFade(){state.live.fade=!state.live.fade;els.liveFadeToggle.classList.toggle('active',state.live.fade);els.liveFadeToggle.textContent=state.live.fade?'FADE ON':'FADE OFF';this.render()},
@@ -2210,7 +2255,18 @@ function updateOutputs(){
   if(els.penWidthOut)els.penWidthOut.textContent=Number(els.penWidth.value).toFixed(1);if(els.minFeatureOut)els.minFeatureOut.textContent=Number(els.minFeature.value).toFixed(1);if(els.microOut)els.microOut.textContent=Number(els.microSegment.value).toFixed(1);if(els.mergeOut)els.mergeOut.textContent=Number(els.mergeDistance.value).toFixed(1);
 }
 
+function updateControlStates(){
+  const g=!!selectedGesture(),scene=!!(state.project.layersEnabled||state.project.composition?.enabled),any=g||scene,checked=state.checkedGestures.size>0;
+  const set=(id,disabled,why='')=>{const e=els[id];if(!e)return;if(e.dataset.baseTitle===undefined)e.dataset.baseTitle=e.title||'';e.disabled=!!disabled;e.title=disabled&&why?why:e.dataset.baseTitle};
+  ['easyExport','exportSvg','exportOptimizedSvg','exportFabricationSvg','exportHpgl','exportPlaybackVideo','motionPortrait'].forEach(id=>set(id,!any,'Record or select a gesture first.'));
+  ['exportDxf','exportPng','exportJson','exportCsv'].forEach(id=>set(id,!g,'Select a gesture first.'));
+  ['duplicateGesture','renameGesture','deleteGesture','addSelectedLayer','crossUseSelectedPath','crossUseSelectedCharacter','mirrorX','mirrorY','centerGesture','fitGesture','resetTransform','reverseTime','normalizeSpeed','stretchTime','compressTime','removePause','resetProcessing'].forEach(id=>set(id,!g,'Select a gesture first.'));
+  set('exportChecked',!checked,'Check at least one gesture first.');set('clearChecks',!checked,'No gestures are checked.');
+  set('saveLiveTake',state.live.samples.length<3,'LIVE WINDOW needs at least 3 incoming samples.');set('savePerformance',state.live.fullSamples.length<3,'PERFORMANCE needs at least 3 incoming samples.');
+  set('clearLive',state.live.samples.length===0&&state.live.fullSamples.length===0,'LIVE buffer is already empty.');set('freezeLive',!state.live.enabled,'Start LIVE DRAW first.');set('performanceMode',!state.live.enabled,'Start LIVE DRAW first.');
+}
 function renderAll(){
+  updateControlStates();
   const g=selectedGesture();
   els.projectTitle.textContent=state.project.name;
   els.gestureNameBadge.textContent=g?.name||'No gesture';
@@ -2219,7 +2275,7 @@ function renderAll(){
   els.emptyHint.classList.toggle('hidden',!!g || state.capture.recording);
   if(!g)els.inspectBadge.classList.add('hidden');
   document.querySelectorAll('[data-style]').forEach(b=>b.classList.toggle('active',b.dataset.style===(g?.style||'ink')));
-  renderGestureList();renderCharacter();renderCaptureDiagnostics();renderKPIs();renderEventTable();renderRecipes();renderCrossMap();renderLayers();renderComposition();renderAnimation();renderCompare();renderPlotterStats();renderGesture();Timeline.render();els.liveWindowOut.textContent=`${Math.round(state.live.windowMs/1000)} s`;els.liveFadeOut.textContent=`${fmt(state.live.fadeMs/1000,1)} s`;els.liveBtn.classList.toggle('live-on',state.live.enabled);els.liveToggle.classList.toggle('live-on',state.live.enabled);els.freezeLive.classList.toggle('active',state.live.frozen);els.liveFadeToggle.classList.toggle('active',state.live.fade);els.liveFadeToggle.textContent=state.live.fade?'FADE ON':'FADE OFF';MobileUI.syncRecord();els.liveRecipe.innerHTML='';state.project.recipes.forEach(r=>els.liveRecipe.add(new Option(r.name,r.id)));const lr=state.project.recipes[state.live.recipeIndex]||state.project.recipes[0];if(lr)els.liveRecipe.value=lr.id;UndoManager.updateButtons();
+  renderGestureList();renderCharacter();renderCaptureDiagnostics();renderKPIs();renderEventTable();renderRecipes();renderCrossMap();renderLayers();renderComposition();renderAnimation();renderCompare();renderPlotterStats();renderGesture();Timeline.render();els.liveWindowOut.textContent=`${Math.round(state.live.windowMs/1000)} s`;els.liveFadeOut.textContent=`${fmt(state.live.fadeMs/1000,1)} s`;els.liveToggle.classList.toggle('live-on',state.live.enabled);els.freezeLive.classList.toggle('active',state.live.frozen);els.liveFadeToggle.classList.toggle('active',state.live.fade);els.liveFadeToggle.textContent=state.live.fade?'FADE ON':'FADE OFF';MobileUI.syncRecord();els.liveRecipe.innerHTML='';state.project.recipes.forEach(r=>els.liveRecipe.add(new Option(r.name,r.id)));const lr=state.project.recipes[state.live.recipeIndex]||state.project.recipes[0];if(lr)els.liveRecipe.value=lr.id;UndoManager.updateButtons();
 }
 
 function autoInterpret(){
@@ -2234,11 +2290,11 @@ function autoInterpret(){
   Store.markDirty();setWorkflow('stylize');syncControlsFromGesture();renderAll();
 }
 function setStyle(style){
-  const g=selectedGesture();if(!g)return;g.style=style;Store.markDirty();setWorkflow('stylize');renderAll()
+  const g=requireGesture('Style change');if(!g)return;g.style=style;Store.markDirty();setWorkflow('stylize');renderAll()
 }
 
 function applyRecipe(r){
-  const g=selectedGesture();if(!g||!r)return;
+  const g=requireGesture('Apply Recipe');if(!g||!r)return;
   g.recipeId=r.id;g.style=r.style;g.processing=deepClone(r.simplify);g.styleParams={baseWidth:4,effectStrength:65,echoCount:4,echoOffset:9,seismicScale:18,...deepClone(r.styleParams||{})};g.mappings=(deepClone(r.mappings||[])).map(migrateMapping);
   syncControlsFromGesture();Store.markDirty();renderAll()
 }
@@ -2246,13 +2302,15 @@ function applyRecipe(r){
 function serializeAnalysis(a){
   return {...a,samples:a.samples.map(p=>({...p}))};
 }
+function requireGesture(label='This action'){const g=selectedGesture();if(!g){actionFeedback(`${label} needs a selected gesture.`,'warn');return null}return g}
+function requireChecked(label='This action'){if(!state.checkedGestures.size){actionFeedback(`${label} needs at least one checked gesture.`,'warn');return false}return true}
 function exportMotionJson(){
-  const g=selectedGesture();if(!g)return;
+  const g=requireGesture('Motion JSON export');if(!g)return;
   const obj={app:'GESTURE',version:APP_VERSION,gesture:{...g,analysis:serializeAnalysis(g.analysis)}};
   download(`${safeName(g.name)}.gesture.json`,new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}))
 }
 function exportCsv(){
-  const g=selectedGesture();if(!g)return;
+  const g=requireGesture('CSV export');if(!g)return;
   const cols=['t','x','y','pressure','tiltX','tiltY','azimuth','velocity','acceleration','jerk','direction','curvature','source','confidence','accelX','accelY','accelZ','gyroX','gyroY','gyroZ','orientationAlpha','orientationBeta','orientationGamma','touchAX','touchAY','touchBX','touchBY','touchDistance','touchRotation','relativeVelocity'];
   const rows=[cols.join(','),...g.analysis.samples.map(p=>cols.map(k=>JSON.stringify(p[k]??'')).join(','))];
   download(`${safeName(g.name)}.csv`,new Blob([rows.join('\n')],{type:'text/csv'}))
@@ -2285,6 +2343,14 @@ function svgString(g,optimized=false){
   const meta=els.includeMetadata.checked?`<metadata id="gesture-metadata">${xmlEscape(JSON.stringify(payload))}</metadata>`:'';
   return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="${SVG_NS}" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${meta}${canvasColor&&canvasColor!=='transparent'?`<rect width="100%" height="100%" fill="${canvasColor}"/>`:''}<g>${body}</g></svg>`;
 }
+let actionToastTimer=0;
+function actionFeedback(message,level='ok'){
+  if(!els.actionToast)return;
+  clearTimeout(actionToastTimer);
+  els.actionToast.textContent=message;
+  els.actionToast.className=`action-toast show ${level}`;
+  actionToastTimer=setTimeout(()=>{els.actionToast.className='action-toast'},2600)
+}
 function exportStatus(message,warn=false){
   const host=els.preflightStatus||els.preflightReport||els.selfTestStatus;
   if(host){host.textContent=message;host.classList?.toggle('warn',!!warn)}
@@ -2292,18 +2358,18 @@ function exportStatus(message,warn=false){
 function exportSvg(){
   try{
     const scene=state.project.layersEnabled||state.project.composition?.enabled,cross=CrossMapEngine.current(),g=cross||selectedGesture();
-    if(!g&&!scene){exportStatus('Export blocked: no gesture or scene is active.',true);return}
-    const result=ExportPreflight?.run?.('svg')||{ok:true,warnings:[]};
-    if(result && result.ok===false){exportStatus('Export blocked: '+(result.errors||result.warnings||[]).join(' · '),true);return}
+    if(!g&&!scene){exportStatus('Export blocked: no gesture or scene is active.',true);actionFeedback('Nothing to export — record or select a gesture first.','warn');return}
+    const ready=ReleaseReadiness.preflight();const result={ok:ready,errors:ready?[]:['Export preflight failed. Open Advanced → Export for details.']};
+    if(result && result.ok===false){exportStatus('Export blocked: '+(result.errors||result.warnings||[]).join(' · '),true);actionFeedback('Export blocked by preflight.','warn');return}
     const svg=scene?SceneEngine.svg(false):svgString(g,false);
     if(!svg||!svg.includes('<svg'))throw Error('SVG renderer returned no document');
     const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
     download(`${safeName(state.project.name||g?.name||'gesture')}.svg`,blob);
-    exportStatus('SVG exported successfully.',false);
+    exportStatus('SVG exported successfully.',false);actionFeedback('SVG downloaded.','ok');
     setWorkflow('export')
   }catch(e){
     console.error('SVG export failed',e);
-    exportStatus('SVG export failed: '+e.message,true)
+    exportStatus('SVG export failed: '+e.message,true);actionFeedback('SVG export failed: '+e.message,'fail')
   }
 }
 function exportOptimizedSvg(){const g=CrossMapEngine.current()||selectedGesture(),scene=state.project.layersEnabled||state.project.composition?.enabled;if(!g&&!scene)return;if(!ReleaseReadiness.preflight())return;download(`${safeName(scene?state.project.name:g.name)}-optimized.svg`,new Blob([scene?SceneEngine.svg(false):svgString(g,true)],{type:'image/svg+xml'}));setWorkflow('export')}
@@ -2313,7 +2379,7 @@ function exportDxf(){
   const g=CrossMapEngine.current()||selectedGesture();if(!g)return;if(!ReleaseReadiness.preflight())return;const fp=FabricationEngine.currentPaths(),c=state.project.fabrication,sx=c.width/1000,sy=c.height/700;let dxf=`999\nGESTURE v${APP_VERSION} · units ${c.units}\n0\nSECTION\n2\nENTITIES\n`;fp.paths.forEach((pts,pi)=>{if(pts.length>1){dxf+=`0\nLWPOLYLINE\n8\nGESTURE_${pi+1}\n90\n${pts.length}\n70\n0\n`;pts.forEach(p=>{dxf+=`10\n${(p.x*sx).toFixed(4)}\n20\n${((700-p.y)*sy).toFixed(4)}\n`})}});dxf+='0\nENDSEC\n0\nEOF\n';download(`${safeName(state.project.name)}.dxf`,new Blob([dxf],{type:'application/dxf'}));setWorkflow('export')
 }
 function exportPng(){
-  const g=selectedGesture();if(!g)return;const svg=svgString(g),blob=new Blob([svg],{type:'image/svg+xml'}),url=URL.createObjectURL(blob),img=new Image();
+  const g=requireGesture('PNG export');if(!g)return;const svg=svgString(g),blob=new Blob([svg],{type:'image/svg+xml'}),url=URL.createObjectURL(blob),img=new Image();
   img.onload=()=>{const c=document.createElement('canvas');c.width=1600;c.height=1120;const x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);c.toBlob(b=>download(`${safeName(g.name)}.png`,b),'image/png')};img.src=url
 }
 function portraitArtSvg(g){return svgString(g,false).replace(/<\?xml[^>]*>/,'')}
@@ -2322,7 +2388,7 @@ function portraitCharacterHtml(g){
   return labels.map(([l,k])=>{const v=g.analysis.metrics[k]||0;return `<div class="portrait-char-row"><span>${l}</span><span class="portrait-char-bar"><i style="width:${Math.round(v*100)}%"></i></span><b>${Math.round(v*100)}</b></div>`}).join('')
 }
 function openMotionPortrait(){
-  const mode=els.portraitMode.value,g=CrossMapEngine.current()||selectedGesture();if(!g)return;
+  const mode=els.portraitMode.value,g=CrossMapEngine.current()||requireGesture('Motion Portrait');if(!g)return;
   if(mode==='compare'){
     const cfg=state.project.compare||{},a=state.project.gestures.find(x=>x.id===cfg.a)||g,b=state.project.gestures.find(x=>x.id===cfg.b)||state.project.gestures.find(x=>x.id!==a.id)||g;
     els.portraitPage.innerHTML=`<div class="portrait-title"><h1>Gesture Comparison</h1><small>GESTURE MOTION PORTRAIT · v${APP_VERSION}</small></div><div class="portrait-grid"><div><h3>${xmlEscape(a.name)}</h3><div class="portrait-art">${portraitArtSvg(a)}</div><div class="portrait-character">${portraitCharacterHtml(a)}</div></div><div><h3>${xmlEscape(b.name)}</h3><div class="portrait-art">${portraitArtSvg(b)}</div><div class="portrait-character">${portraitCharacterHtml(b)}</div></div></div>`;
@@ -2448,16 +2514,104 @@ const MobileUI={
   }
 };
 
+const ControlAudit={
+  routed(btn){if(btn.onclick)return true;if(btn.matches('[data-source],[data-style],[data-focus],[data-preview],[data-mode],[data-mobile-panel],[data-trace-color]'))return true;return false},
+  run(){const buttons=[...document.querySelectorAll('button')],dead=buttons.filter(b=>!this.routed(b));const duplicateRoles=[];if(document.getElementById('sourceLive'))duplicateRoles.push('LIVE source');if(document.getElementById('startCamera'))duplicateRoles.push('Start Camera duplicate');if(document.getElementById('importMotionBtn'))duplicateRoles.push('Import Motion duplicate');return {buttons:buttons.length,dead:dead.map(b=>b.id||b.textContent.trim()),duplicateRoles}},
+  report(){const r=this.run();if(r.dead.length||r.duplicateRoles.length){console.warn('GESTURE control audit',r);actionFeedback(`Control audit: ${r.dead.length} unbound, ${r.duplicateRoles.length} duplicate`,'warn')}return r}
+};
+const ToolShell={
+  stage:'capture',
+  filter:false,
+  setContext(stage){
+    this.stage=stage||'capture';
+    if(els.leftToolContext)els.leftToolContext.textContent=this.stage.toUpperCase();
+    if(els.rightToolContext)els.rightToolContext.textContent=(this.stage==='export'?'EXPORT':this.stage==='stylize'?'STYLE':this.stage==='simplify'?'PROCESS':'MOTION');
+  },
+  showStage(stage,opts={}){
+    this.filter=true;this.setContext(stage);
+    document.body.classList.add('tool-filter-active');
+    document.body.classList.remove('tool-show-all');
+    document.querySelectorAll('[data-tool-stage]').forEach(el=>{
+      const tag=el.dataset.toolStage;
+      const active=tag===stage || (stage==='capture'&&tag==='library') || (stage==='export'&&tag==='system');
+      el.classList.toggle('tool-stage-active',active)
+    });
+    if(opts.open!==false){
+      document.querySelectorAll(`details[data-tool-stage="${stage}"]`).forEach(d=>d.open=true)
+    }
+  },
+  showAll(){
+    this.filter=false;document.body.classList.remove('tool-filter-active');document.body.classList.add('tool-show-all');this.setContext('all');
+    document.querySelectorAll('[data-tool-stage]').forEach(el=>el.classList.remove('tool-stage-active'));
+    actionFeedback('All tools restored.','ok')
+  },
+  reset(){
+    document.body.classList.remove('tool-filter-active','tool-show-all','mobile-panel-open','mobile-left','mobile-right');
+    document.querySelectorAll('[data-tool-stage]').forEach(el=>el.classList.remove('tool-stage-active'));
+    document.querySelectorAll('.sidebar,.rightbar').forEach(el=>{el.scrollTop=0});
+    setMode('easy');this.filter=false;this.setContext('capture');
+    document.querySelectorAll('.rightbar details').forEach(d=>d.open=false);
+    actionFeedback('Tool layout reset.','ok');renderAll()
+  }
+};
+
+const WorkflowNav={
+  findDetail(name){
+    return [...document.querySelectorAll('.rightbar details')].find(d=>d.querySelector(':scope > summary')?.textContent.trim()===name)
+  },
+  findSection(name){
+    return [...document.querySelectorAll('.sidebar .section')].find(s=>s.querySelector(':scope > h3')?.textContent.trim()===name)
+  },
+  go(step){
+    document.querySelectorAll('.workflow [data-step]').forEach(b=>b.classList.toggle('current',b.dataset.step===step));
+    if(step==='move'){
+      ToolShell.showStage('capture',{open:false});MobileUI.closePanels();els.gestureSvg.scrollIntoView({behavior:'smooth',block:'center'});return
+    }
+    if(step==='capture'){
+      ToolShell.showStage('capture');if(MobileUI.isMobile())MobileUI.open('capture');
+      else this.findSection('Capture')?.scrollIntoView({behavior:'smooth',block:'start'});
+      return
+    }
+    if(step==='stylize'){
+      ToolShell.showStage('stylize');if(document.body.classList.contains('easy')){
+        if(MobileUI.isMobile())MobileUI.open('style');
+        else this.findSection('Style')?.scrollIntoView({behavior:'smooth',block:'start'})
+      }else{
+        if(MobileUI.isMobile())MobileUI.open('advanced');
+        const d=this.findDetail('Stylize');if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'})}
+      }
+      return
+    }
+    if(step==='simplify'){
+      ToolShell.showStage('simplify');setMode('advanced');if(MobileUI.isMobile())MobileUI.open('advanced');
+      const d=this.findDetail('Simplify');if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'})}
+      return
+    }
+    if(step==='export'){
+      ToolShell.showStage('export');setMode('advanced');if(MobileUI.isMobile())MobileUI.open('advanced');
+      const d=this.findDetail('Export');if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'})}
+      actionFeedback('Export controls opened — playback video is here.','ok')
+    }
+  }
+};
+
 function bind(){
+  document.querySelectorAll('.workflow [data-step]').forEach(b=>b.onclick=()=>WorkflowNav.go(b.dataset.step));
+  els.showAllTools.onclick=()=>ToolShell.showAll();
+  els.resetToolView.onclick=()=>ToolShell.reset();
   els.undoBtn.onclick=()=>UndoManager.undo();els.redoBtn.onclick=()=>UndoManager.redo();
   els.recordBtn.onclick=()=>CaptureEngine.arm();els.clearGestureBtn.onclick=clearAndStartFreshGesture;
   document.querySelectorAll('[data-source]').forEach(b=>b.onclick=()=>SourceManager.set(b.dataset.source));
-  els.importMotionBtn.onclick=()=>els.motionDataFile.click();els.motionDataFile.onchange=async()=>{const f=els.motionDataFile.files[0];if(!f)return;try{await ImportEngine.file(f)}catch(e){alert('Could not import motion data: '+e.message)}els.motionDataFile.value=''};
-  els.requestSensor.onclick=()=>SensorEngine.enable();els.startCamera.onclick=()=>CameraEngine.start();els.stopCamera.onclick=()=>CameraEngine.stop();els.sampleCameraColor.onclick=()=>CameraEngine.sampleColor();els.lockCameraTarget.onclick=()=>CameraEngine.toggleLock();els.minimizeCamera.onclick=()=>CameraEngine.minimize();els.restoreCamera.onclick=()=>CameraEngine.restore();els.webcamOverlay.onclick=e=>{const r=els.webcamOverlay.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*els.webcamOverlay.width,y=(e.clientY-r.top)/r.height*els.webcamOverlay.height;CameraEngine.sampleAt(x,y)};els.cameraTracker.onchange=()=>{state.camera.prevFrame=null;if(els.cameraTracker.value!=='color'){state.camera.targetLocked=false;els.lockCameraTarget.classList.remove('active');els.lockCameraTarget.textContent='LOCK TARGET'}CameraEngine.updateTargetStatus();els.signalReadout.textContent='Camera tracker: '+els.cameraTracker.options[els.cameraTracker.selectedIndex].text};
-  els.liveBtn.onclick=()=>LiveEngine.toggle();els.liveToggle.onclick=()=>LiveEngine.toggle();els.saveLiveTake.onclick=()=>LiveEngine.saveWindow();els.savePerformance.onclick=()=>LiveEngine.savePerformance();els.clearLive.onclick=()=>LiveEngine.clear();els.freezeLive.onclick=()=>LiveEngine.freeze();els.performanceMode.onclick=()=>LiveEngine.performance();els.liveFadeToggle.onclick=()=>LiveEngine.setFade();els.livePrevRecipe.onclick=()=>LiveEngine.stepRecipe(-1);els.liveNextRecipe.onclick=()=>LiveEngine.stepRecipe(1);els.liveRecipe.onchange=()=>LiveEngine.setRecipeById(els.liveRecipe.value);els.liveWindow.oninput=()=>{state.live.windowMs=Number(els.liveWindow.value)*1000;els.liveWindowOut.textContent=`${els.liveWindow.value} s`};els.liveFade.oninput=()=>{state.live.fadeMs=Number(els.liveFade.value)*1000;els.liveFadeOut.textContent=`${els.liveFade.value} s`};
+  els.motionDataFile.onchange=async()=>{const f=els.motionDataFile.files[0];if(!f)return;try{await ImportEngine.file(f)}catch(e){alert('Could not import motion data: '+e.message)}els.motionDataFile.value=''};
+  els.stopCamera.onclick=()=>CameraEngine.stop();els.lockCameraTarget.onclick=()=>CameraEngine.toggleLock();els.minimizeCamera.onclick=()=>CameraEngine.minimize();els.restoreCamera.onclick=()=>CameraEngine.restore();els.webcamOverlay.onclick=e=>{const r=els.webcamOverlay.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*els.webcamOverlay.width,y=(e.clientY-r.top)/r.height*els.webcamOverlay.height;CameraEngine.sampleAt(x,y)};els.cameraTracker.onchange=()=>{state.camera.prevFrame=null;if(els.cameraTracker.value!=='color'){state.camera.targetLocked=false;els.lockCameraTarget.classList.remove('active');els.lockCameraTarget.textContent='LOCK TARGET'}CameraEngine.updateTargetStatus();els.signalReadout.textContent='Camera tracker: '+els.cameraTracker.options[els.cameraTracker.selectedIndex].text};
+  els.liveBtn.onclick=()=>{if(MobileUI.isMobile())MobileUI.open('more');else{const s=[...document.querySelectorAll('.sidebar .section')].find(x=>x.querySelector('h3')?.textContent.trim()==='LIVE');s?.scrollIntoView({behavior:'smooth',block:'start'});actionFeedback('LIVE controls opened.','ok')}};els.liveToggle.onclick=()=>LiveEngine.toggle();els.saveLiveTake.onclick=()=>LiveEngine.saveWindow();els.savePerformance.onclick=()=>LiveEngine.savePerformance();els.clearLive.onclick=()=>LiveEngine.clear();els.freezeLive.onclick=()=>LiveEngine.freeze();els.performanceMode.onclick=()=>LiveEngine.performance();els.liveFadeToggle.onclick=()=>LiveEngine.setFade();els.livePrevRecipe.onclick=()=>LiveEngine.stepRecipe(-1);els.liveNextRecipe.onclick=()=>LiveEngine.stepRecipe(1);els.liveRecipe.onchange=()=>LiveEngine.setRecipeById(els.liveRecipe.value);els.liveWindow.oninput=()=>{state.live.windowMs=Number(els.liveWindow.value)*1000;els.liveWindowOut.textContent=`${els.liveWindow.value} s`};els.liveFade.oninput=()=>{state.live.fadeMs=Number(els.liveFade.value)*1000;els.liveFadeOut.textContent=`${els.liveFade.value} s`};
 
   ['pointerdown','pointermove','pointerup','pointercancel'].forEach(ev=>els.gestureSvg.addEventListener(ev,e=>ev==='pointerdown'?CaptureEngine.pointerDown(e):ev==='pointermove'?CaptureEngine.pointerMove(e):CaptureEngine.pointerUp(e),{passive:false}));
   document.querySelectorAll('[data-style]').forEach(b=>b.onclick=()=>setStyle(b.dataset.style));
+  const syncTraceSwatches=()=>{
+    const g=selectedGesture(),color=(g?.styleParams?.traceColor||'#111111').toLowerCase();
+    document.querySelectorAll('[data-trace-color]').forEach(b=>b.classList.toggle('active',b.dataset.traceColor.toLowerCase()===color))
+  };
   const applyTraceAppearance=(source='advanced')=>{
     const g=selectedGesture();if(!g)return;
     if(source==='easy'){
@@ -2469,11 +2623,15 @@ function bind(){
       g.styleParams.baseWidth=clamp(g.styleParams.baseWidth,g.styleParams.minTraceWidth,g.styleParams.maxTraceWidth);els.baseWidth.value=g.styleParams.baseWidth;
       els.easyTraceColor.value=g.styleParams.traceColor;els.easyTraceOpacity.value=Math.round(g.styleParams.traceOpacity*100);els.easyTraceWidth.value=g.styleParams.baseWidth;
     }
-    Store.markDirty();updateOutputs();renderGesture()
+    Store.markDirty();updateOutputs();syncTraceSwatches();renderGesture()
   };
-  [els.traceColor,els.traceOpacity,els.baseWidth,els.minTraceWidth,els.maxTraceWidth,els.secondaryTraceColor,els.secondaryTraceOpacity,els.canvasColor].forEach(x=>x.oninput=()=>applyTraceAppearance('advanced'));els.baseWidth.oninput=()=>{applyTraceAppearance('advanced');els.widthOut.textContent=`${Number(els.baseWidth.value).toFixed(1)} px`};
-  [els.easyTraceColor,els.easyTraceOpacity,els.easyTraceWidth].forEach(x=>x.oninput=()=>applyTraceAppearance('easy'));els.easyTraceWidth.oninput=()=>{applyTraceAppearance('easy');els.easyTraceWidthOut.textContent=`${Number(els.easyTraceWidth.value).toFixed(1)} px`};
-  document.querySelectorAll('[data-trace-color]').forEach(b=>b.onclick=()=>{const g=selectedGesture();if(!g)return;g.styleParams.traceColor=b.dataset.traceColor;els.traceColor.value=b.dataset.traceColor;els.easyTraceColor.value=b.dataset.traceColor;Store.markDirty();renderGesture()});
+  [els.traceOpacity,els.baseWidth,els.minTraceWidth,els.maxTraceWidth,els.secondaryTraceColor,els.secondaryTraceOpacity,els.canvasColor].forEach(x=>x.oninput=()=>applyTraceAppearance('advanced'));els.baseWidth.oninput=()=>{applyTraceAppearance('advanced');els.widthOut.textContent=`${Number(els.baseWidth.value).toFixed(1)} px`};
+  [els.easyTraceOpacity,els.easyTraceWidth].forEach(x=>x.oninput=()=>applyTraceAppearance('easy'));els.easyTraceWidth.oninput=()=>{applyTraceAppearance('easy');els.easyTraceWidthOut.textContent=`${Number(els.easyTraceWidth.value).toFixed(1)} px`};
+  document.querySelectorAll('[data-trace-color]').forEach(b=>b.onclick=()=>{const g=selectedGesture();if(!g)return;g.styleParams.traceColor=b.dataset.traceColor;els.traceColor.value=b.dataset.traceColor;els.easyTraceColor.value=b.dataset.traceColor;Store.markDirty();syncTraceSwatches();renderGesture()});
+  els.easyTraceCustom.onclick=()=>els.easyTraceColor.click();
+  els.traceCustom.onclick=()=>els.traceColor.click();
+  els.easyTraceColor.oninput=()=>applyTraceAppearance('easy');
+  els.traceColor.oninput=()=>applyTraceAppearance('advanced');
 
   els.autoInterpret.onclick=autoInterpret;els.easyExport.onclick=exportSvg;els.exportSvg.onclick=exportSvg;els.exportOptimizedSvg.onclick=exportOptimizedSvg;els.exportFabricationSvg.onclick=exportFabricationSvg;els.exportDxf.onclick=exportDxf;els.exportHpgl.onclick=exportHpgl;els.exportPng.onclick=exportPng;els.exportJson.onclick=exportMotionJson;els.exportCsv.onclick=exportCsv;els.motionPortrait.onclick=openMotionPortrait;els.closePortrait.onclick=()=>els.portraitModal.classList.add('hidden');els.printPortrait.onclick=()=>window.print();els.importGestureSvgBtn.onclick=()=>els.gestureSvgFile.click();els.gestureSvgFile.onchange=async()=>{const f=els.gestureSvgFile.files[0];if(!f)return;try{await importGestureSvg(f)}catch(e){alert('Could not import GESTURE SVG: '+e.message)}els.gestureSvgFile.value=''};
   els.playBtn.onclick=()=>PlaybackEngine.playPause();els.prevEvent.onclick=()=>PlaybackEngine.event(-1);els.nextEvent.onclick=()=>PlaybackEngine.event(1);
@@ -2631,6 +2789,7 @@ function syncProjectMode(){
 Store.load();
 repairProjectState(state.project);
 bind();
+setTimeout(()=>ControlAudit.report(),0);
 MobileUI.setup();
 UndoManager.init();
 syncProjectMode();

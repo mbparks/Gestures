@@ -1,4 +1,4 @@
-# GESTURE v5.4 — Stable Release
+# GESTURE v5.5 — Stable Release
 
 GESTURE is a browser-native motion-to-mark Field Instrument. It records not only where movement goes, but how it happens: speed, hesitation, acceleration, jerk, repetition, rhythm, pressure, direction, curvature, and supported physical motion signals.
 
@@ -249,3 +249,16 @@ Trace Color now has a single visible interaction model in Easy and Advanced mode
 - EXPORT switches to Advanced as needed, opens the Export section, and brings it into view.
 - Playback Video controls were moved out of Animation and into the main Export section.
 - There is still only one `EXPORT PLAYBACK VIDEO` action; it was relocated, not duplicated.
+
+
+## Workflow shell cleanup — v5.5
+
+The left and right tool columns were restructured around stable roles:
+
+- **Left: WORKFLOW TOOLS** — capture, library, live, and workflow-stage controls.
+- **Right: INSPECTOR** — Motion Character, Summary, Capture Quality, and advanced stage controls.
+- Workflow buttons filter the tool shell to the active stage instead of arbitrarily hiding unrelated UI.
+- **ALL TOOLS** always restores every workflow/advanced section.
+- **RESET VIEW** returns the instrument to Easy Mode, Capture stage, scroll-top, and a known-good layout.
+- Advanced Focus no longer hides controls. It is now informational/stateful only.
+- Tool headers remain sticky so recovery actions are always reachable while scrolling.
