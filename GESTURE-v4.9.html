@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>GESTURE v4.2 — Motion Instrument</title>
+<title>GESTURE v4.9 — Motion Instrument</title>
 <style>
 :root{
   --bg:#0c0f12; --panel:#11161b; --panel2:#171d23; --line:#2b343d; --text:#eef3f7; --muted:#95a3af;
@@ -134,7 +134,15 @@ details .content{padding:0 10px 10px}
 .source-list button.source-active{background:var(--accent);border-color:var(--accent);color:#fff}
 .source-status{font:10px ui-monospace;color:var(--muted);margin-top:6px;line-height:1.35}
 .camera-stage{position:absolute;right:12px;bottom:12px;width:min(280px,34%);aspect-ratio:4/3;z-index:5;border:1px solid var(--line);background:#000;box-shadow:var(--shadow);overflow:hidden;border-radius:6px}
-.camera-stage.hidden{display:none}.camera-stage video,.camera-stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.camera-stage canvas{pointer-events:none}
+.camera-stage.hidden{display:none}.camera-stage video,.camera-stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.camera-stage canvas{pointer-events:auto;cursor:crosshair}.camera-track-label{position:absolute;left:8px;top:8px;z-index:3;font:9px ui-monospace;padding:3px 5px;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 85%,transparent);color:var(--muted);pointer-events:none}.camera-track-label.locked{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 60%,var(--line))}
+.camera-stage-controls{position:absolute;right:6px;top:6px;z-index:4;display:flex;gap:4px}
+.camera-stage-controls button{padding:2px 6px;min-width:26px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line)}
+.camera-stage.minimized{width:128px!important;height:42px!important;aspect-ratio:auto}
+.camera-stage.minimized video,.camera-stage.minimized canvas,.camera-stage.minimized .camera-track-label{display:none!important}
+.camera-stage.minimized .camera-stage-controls{inset:0;display:flex;align-items:center;justify-content:flex-end;padding:5px}
+.camera-stage.minimized #minimizeCamera{display:none}
+.camera-stage.minimized #restoreCamera{display:inline-block!important}
+
 .live-on{background:var(--danger)!important;border-color:var(--danger)!important;color:#fff!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--danger) 18%,transparent)}
 .live-panel{border:1px solid color-mix(in srgb,var(--danger) 35%,var(--line));background:color-mix(in srgb,var(--danger) 5%,var(--panel2));padding:7px;border-radius:6px}
 .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.compare-grid select{min-width:0;width:100%}
@@ -162,6 +170,15 @@ details .content{padding:0 10px 10px}
 .animation-box{border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:7px}
 .scene-badge{color:var(--accent2)!important;border-color:color-mix(in srgb,var(--accent2) 45%,var(--line))!important}
 .easy-flow{font:10px ui-monospace;color:var(--muted);line-height:1.5;padding:6px;border-left:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.trace-appearance{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.trace-appearance label{font-size:10px;color:var(--muted)}
+.trace-appearance input[type="color"]{width:100%;height:34px;padding:2px;cursor:pointer}
+.trace-appearance .wide{grid-column:1/3}
+.trace-palette{display:flex;gap:5px;flex-wrap:wrap}
+.trace-swatch{width:25px;height:25px;border-radius:50%;padding:0;border:2px solid var(--line)}
+.trace-swatch:hover{transform:scale(1.08)}
+@media(max-width:680px){.trace-appearance{grid-template-columns:1fr 1fr}.trace-appearance input[type="range"]{width:100%}}
+
 .study-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.study-card{border:1px solid #bbb;padding:10px}.study-card svg{width:100%;height:150px}.study-card h4{margin:4px 0 7px;font-size:12px}
 
 
@@ -218,7 +235,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   .canvas-overlay .badge{font-size:9px;padding:3px 5px}
   #sampleBadge,#sourceBadge{display:none!important}
   .empty-hint strong{font-size:22px}.empty-hint{font-size:12px;padding:24px}
-  .camera-stage{width:38%;right:7px;bottom:72px}
+  .camera-stage{width:min(72vw,360px);right:7px;bottom:72px}
 
   .sidebar,.rightbar{position:fixed!important;left:0;right:0;bottom:58px;z-index:20;max-height:min(48dvh,430px);background:var(--panel);border:1px solid var(--line)!important;border-left:0!important;border-right:0!important;border-radius:14px 14px 0 0;box-shadow:0 -18px 40px rgba(0,0,0,.35);overflow:auto!important;display:none!important;padding-top:5px}
   body.mobile-panel-open .sidebar,body.mobile-panel-open .rightbar{display:block!important}
@@ -286,11 +303,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">GESTURE</div><div class="version">v4.2</div>
-  <div class="project-name" id="projectTitle">Untitled Project</div><span class="badge">RESET UX</span><button id="undoBtn" title="Undo processed/project change">↶</button><button id="redoBtn" title="Redo processed/project change">↷</button>
+  <div class="brand">GESTURE</div><div class="version">v4.9</div>
+  <div class="project-name" id="projectTitle">Untitled Project</div><span class="badge">PLAYBACK VIDEO</span><button id="undoBtn" title="Undo processed/project change">↶</button><button id="redoBtn" title="Redo processed/project change">↷</button>
   <div class="spacer"></div>
   <div class="save" id="saveStatus"><span class="save-dot"></span><span>Saved</span></div>
-  <button id="liveBtn" title="Immediate motion-to-mark mode">LIVE</button><div class="mode-toggle"><button id="easyBtn" class="active">EASY</button><button id="advBtn">ADV</button></div>
+  <button id="liveBtn" title="Immediate motion-to-mark mode">LIVE DRAW</button><div class="mode-toggle"><button id="easyBtn" class="active">EASY</button><button id="advBtn">ADV</button></div>
   <button id="themeBtn" title="Toggle light/dark">◐</button>
 </header>
 
@@ -312,6 +329,22 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <h3>Style</h3>
       <div class="preset-grid">
         <button data-style="ink" class="active">INK</button><button data-style="ribbon">RIBBON</button><button data-style="plotter">PLOTTER</button><button data-style="pulse">PULSE</button><button data-style="skeleton">SKELETON</button><button data-style="constellation">CONSTELLATION</button><button data-style="seismic">SEISMIC</button><button data-style="echo">ECHO</button><button data-style="notation">NOTATION</button>
+      </div>
+      <div class="trace-appearance">
+        <label>Trace color<input id="easyTraceColor" type="color" value="#111111"></label>
+        <label>Opacity <output id="easyTraceOpacityOut">100%</output><input id="easyTraceOpacity" type="range" min="5" max="100" value="100"></label>
+        <label class="wide">Thickness <output id="easyTraceWidthOut">4.0 px</output><input id="easyTraceWidth" type="range" min=".5" max="24" step=".5" value="4"></label>
+        <div class="wide source-status">Thickness sets the base trace weight. Dynamic styles may vary around it.</div>
+      </div>
+      <div class="trace-palette" id="tracePaletteEasy">
+        <button class="trace-swatch" data-trace-color="#111111" style="background:#111111" title="Black"></button>
+        <button class="trace-swatch" data-trace-color="#ffffff" style="background:#ffffff" title="White"></button>
+        <button class="trace-swatch" data-trace-color="#e63946" style="background:#e63946" title="Red"></button>
+        <button class="trace-swatch" data-trace-color="#ff8c00" style="background:#ff8c00" title="Orange"></button>
+        <button class="trace-swatch" data-trace-color="#ffd166" style="background:#ffd166" title="Yellow"></button>
+        <button class="trace-swatch" data-trace-color="#06d6a0" style="background:#06d6a0" title="Green"></button>
+        <button class="trace-swatch" data-trace-color="#118ab2" style="background:#118ab2" title="Blue"></button>
+        <button class="trace-swatch" data-trace-color="#8338ec" style="background:#8338ec" title="Violet"></button>
       </div>
       <div style="height:8px"></div>
       <div class="easy-flow">1 · RECORD A MOVEMENT<br>2 · AUTO INTERPRET OR CHOOSE A STYLE<br>3 · EXPORT THE MARK</div>
@@ -337,9 +370,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     <section class="section">
       <h3>LIVE</h3>
       <div class="live-panel stack">
-        <button id="liveToggle" class="full">ENTER LIVE</button>
+        <button id="liveToggle" class="full">START LIVE DRAW</button>
         <div class="live-controls"><button id="performanceMode">PERFORMANCE VIEW</button><button id="freezeLive">FREEZE</button><button id="clearLive">CLEAR</button><button id="saveLiveTake">SAVE WINDOW</button><button id="savePerformance">SAVE PERFORMANCE</button><button id="livePrevRecipe">← RECIPE</button><button id="liveNextRecipe">RECIPE →</button><button id="liveFadeToggle">FADE ON</button></div>
         <select id="liveRecipe"></select>
+        <div id="liveInputStatus" class="source-status"><b>LIVE INPUT</b> · idle</div>
         <label class="control"><span>Trail window</span><output id="liveWindowOut">8 s</output><input id="liveWindow" type="range" min="1" max="30" value="8"></label>
         <label class="control"><span>Fade horizon</span><output id="liveFadeOut">3 s</output><input id="liveFade" type="range" min=".5" max="15" step=".5" value="3"></label>
         <div class="source-status">LIVE keyboard: L enter/exit · F performance view · C clear · X freeze · [ ] Recipe · Esc exits performance view.</div>
@@ -363,7 +397,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <g id="eventLayer"></g>
       <g id="headLayer"></g>
     </svg>
-    <div id="cameraStage" class="camera-stage hidden"><video id="webcamVideo" autoplay playsinline muted></video><canvas id="webcamOverlay" width="320" height="240"></canvas></div><div class="performance-hud" id="performanceHud"><b>GESTURE LIVE</b><span id="performanceSource">POINTER</span><span id="performanceRecipe">INK</span><span>F / ESC exit</span></div>
+    <div id="cameraStage" class="camera-stage hidden"><video id="webcamVideo" autoplay playsinline muted></video><canvas id="webcamOverlay" width="320" height="240"></canvas><div id="trackedPointLabel" class="camera-track-label">TRACKED POINT</div><div class="camera-stage-controls"><button id="minimizeCamera" title="Minimize camera preview">—</button><button id="restoreCamera" class="hidden" title="Restore camera preview">▣</button></div></div><div class="performance-hud" id="performanceHud"><b>GESTURE LIVE</b><span id="performanceSource">POINTER</span><span id="performanceRecipe">INK</span><span>F / ESC exit</span></div>
     <div class="canvas-overlay">
       <span class="badge" id="gestureNameBadge">No gesture</span>
       <span class="badge" id="styleBadge">INK</span>
@@ -431,8 +465,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <details>
         <summary>Physical / Imported Motion</summary>
         <div class="content stack">
-          <div class="toolbar"><button id="importMotionBtn">Import CSV / JSON</button><button id="requestSensor">Enable Sensors</button><button id="startCamera">Start Camera</button><button id="stopCamera">Stop Camera</button></div>
-          <div class="row"><select id="cameraTracker"><option value="light">Bright Point</option><option value="color">Color Tracker</option><option value="motion">Motion Centroid</option></select><button id="sampleCameraColor">Sample Center Color</button></div>
+          <div class="toolbar"><button id="importMotionBtn">Import CSV / JSON</button><button id="requestSensor">Enable Sensors</button><button id="startCamera">Start Preview</button><button id="stopCamera">Stop Camera</button></div>
+          <div class="row"><select id="cameraTracker"><option value="color" selected>Color Target</option><option value="light">Bright Point</option><option value="motion">Motion Centroid</option></select><button id="sampleCameraColor">Sample Center</button><button id="lockCameraTarget">LOCK TARGET</button></div>
+          <div class="source-status"><b>CAMERA FLOW</b> · Preview → tap target → Lock Target → Record</div>
+          <div id="cameraTargetStatus" class="signal-readout">TRACKED POINT · color target not selected · confidence —</div>
           <div id="signalReadout" class="signal-readout">No physical source active.</div>
           <div class="char-note">Sensor capture is treated as motion signal data. GESTURE does not claim accelerometer data alone reconstructs precise absolute spatial position.</div>
         </div>
@@ -503,9 +539,26 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
             <label>Ping Pong<select id="animationPingPong"><option value="false">Off</option><option value="true">On</option></select></label>
           </div>
           <label>Playback style<select id="animationMode"><option value="draw">Draw On</option><option value="trail">Trail</option><option value="sequence">Layer Sequence</option></select></label>
-          <div class="toolbar"><button id="previewAnimation">Preview</button><button id="stopAnimationPreview">Stop</button><button id="exportAnimatedSvg">Animated SVG</button><button id="exportWebM">WebM</button></div>
+          <div class="toolbar"><button id="previewAnimation">Preview</button><button id="stopAnimationPreview">Stop</button><button id="exportAnimatedSvg">Animated SVG</button><button id="exportWebM">Scene WebM</button></div>
           <div class="anim-preview-bar"><i id="animationProgress"></i></div>
           <div id="animationStatus" class="status">Animation exports the current CROSS MAP / Layers / Composition scene.</div>
+          <div class="divider"></div>
+          <div class="mini-label">PLAYBACK VIDEO</div>
+          <div class="v3-grid">
+            <label>Resolution<select id="playbackVideoResolution"><option value="canvas">Canvas 1000×700</option><option value="720">720p</option><option value="1080" selected>1080p</option></select></label>
+            <label>FPS<select id="playbackVideoFps"><option>24</option><option selected>30</option><option>60</option></select></label>
+            <label>Mode<select id="playbackVideoMode"><option value="trail" selected>Full Trail</option><option value="head">Head Only</option><option value="window">Window</option></select></label>
+            <label>Background<select id="playbackVideoBackground"><option value="canvas" selected>Canvas Color</option><option value="transparent">Transparent</option><option value="black">Black</option><option value="white">White</option></select></label>
+            <label>Lead in (s)<input id="playbackLeadIn" type="number" min="0" max="10" step=".25" value=".5"></label>
+            <label>Hold end (s)<input id="playbackHoldEnd" type="number" min="0" max="10" step=".25" value=".75"></label>
+          </div>
+          <label><input id="playbackVideoLoop" type="checkbox"> Loop once</label>
+          <label><input id="playbackVideoPingPong" type="checkbox"> Ping Pong</label>
+          <label><input id="playbackVideoEvents" type="checkbox"> Include event markers</label>
+          <label><input id="playbackVideoHead" type="checkbox" checked> Include playback head</label>
+          <label><input id="playbackVideoCamera" type="checkbox"> Include camera preview</label>
+          <div class="toolbar"><button id="exportPlaybackVideo" class="primary">EXPORT PLAYBACK VIDEO</button><button id="cancelPlaybackVideo">Cancel</button></div>
+          <div id="playbackVideoStatus" class="status">Records the actual playback rendering to WebM.</div>
         </div>
       </details>
 
@@ -545,7 +598,26 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <details open>
         <summary>Stylize</summary>
         <div class="content stack">
-          <label class="control"><span>Base width</span><output id="widthOut">4.0</output><input id="baseWidth" type="range" min=".5" max="18" step=".5" value="4"></label>
+          <div class="trace-appearance">
+            <label>Primary color<input id="traceColor" type="color" value="#111111"></label>
+            <label>Trace opacity <output id="traceOpacityOut">100%</output><input id="traceOpacity" type="range" min="5" max="100" value="100"></label>
+            <label>Base thickness <output id="widthOut">4.0 px</output><input id="baseWidth" type="range" min=".5" max="24" step=".5" value="4"></label>
+            <label>Minimum thickness <output id="minWidthOut">0.5 px</output><input id="minTraceWidth" type="range" min=".25" max="12" step=".25" value=".5"></label>
+            <label>Maximum thickness <output id="maxWidthOut">18.0 px</output><input id="maxTraceWidth" type="range" min="1" max="40" step=".5" value="18"></label>
+            <label>Secondary color<input id="secondaryTraceColor" type="color" value="#118ab2"></label>
+            <label>Secondary opacity <output id="secondaryOpacityOut">55%</output><input id="secondaryTraceOpacity" type="range" min="0" max="100" value="55"></label>
+            <label>Canvas color<input id="canvasColor" type="color" value="#ffffff"></label>
+          </div>
+          <div class="trace-palette" id="tracePaletteAdvanced">
+            <button class="trace-swatch" data-trace-color="#111111" style="background:#111111" title="Black"></button>
+            <button class="trace-swatch" data-trace-color="#ffffff" style="background:#ffffff" title="White"></button>
+            <button class="trace-swatch" data-trace-color="#e63946" style="background:#e63946" title="Red"></button>
+            <button class="trace-swatch" data-trace-color="#ff8c00" style="background:#ff8c00" title="Orange"></button>
+            <button class="trace-swatch" data-trace-color="#ffd166" style="background:#ffd166" title="Yellow"></button>
+            <button class="trace-swatch" data-trace-color="#06d6a0" style="background:#06d6a0" title="Green"></button>
+            <button class="trace-swatch" data-trace-color="#118ab2" style="background:#118ab2" title="Blue"></button>
+            <button class="trace-swatch" data-trace-color="#8338ec" style="background:#8338ec" title="Violet"></button>
+          </div>
           <label class="control"><span>Effect strength</span><output id="strengthOut">65%</output><input id="effectStrength" type="range" min="0" max="100" value="65"></label>
           <div class="preset-grid">
             <button data-style="raw">RAW</button><button data-style="ink" class="active">INK</button><button data-style="ribbon">RIBBON</button><button data-style="pulse">PULSE</button><button data-style="plotter">PLOTTER</button><button data-style="constellation">CONSTELLATION</button><button data-style="seismic">SEISMIC</button><button data-style="echo">ECHO</button><button data-style="skeleton">SKELETON</button><button data-style="notation">NOTATION</button>
@@ -684,7 +756,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <div class="portrait-title"><h1>GESTURE Quick Start</h1><small>v4.0 STABLE RELEASE</small></div>
       <h3>EASY</h3><p><b>Record → Auto Interpret → Export.</b> On phones, the canvas is home: use the floating CLEAR and RECORD controls, plus the bottom dock for Capture, Style, Library, Insights, and More.</p>
       <h3>ADVANCED</h3><p>Use Instrument Focus to narrow the interface to Capture, Analyze, Interpret, Compose, or Output. RAW capture stays untouched; transforms, simplification, CROSS MAP, and style operations are non-destructive.</p>
-      <h3>LIVE</h3><p>Choose Pointer, Camera, or Sensor, enter LIVE, then press F for Performance View. Use [ and ] to switch Recipes, X to freeze, and C to clear.</p>
+      <h3>CAMERA + LIVE</h3><p>Select Camera to start preview, tap the object or colored marker you want to follow, press LOCK TARGET, then RECORD. You can minimize the preview while working; after STOP & SAVE the preview hides automatically.</p>
       <h3>FABRICATION</h3><p>Plotter Mode provides physical dimensions, units, path order, travel optimization, estimated plot time, DXF, HPGL, and true-scale SVG.</p>
       <h3>PROJECT SAFETY</h3><p>Autosave, recovery snapshots, undo/redo, state repair, JSON project export, and SVG metadata round trips protect editable motion data.</p>
     </div>
@@ -702,7 +774,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 (() => {
 'use strict';
 
-const APP_VERSION='4.2';
+const APP_VERSION='4.9';
 const STORAGE_KEY='gesture-field-instrument-v1';
 const RECOVERY_KEY='gesture-field-instrument-recovery-v36';
 const SVG_NS='http://www.w3.org/2000/svg';
@@ -728,7 +800,7 @@ function defaultRecipe(name='SIGNATURE', style='ink'){
   return {
     id:uid(), name, style, builtin:true,
     simplify:{essence:20,geoTol:2,motionAware:true},
-    styleParams:{baseWidth:4,effectStrength:65,echoCount:4,echoOffset:9,seismicScale:18},
+    styleParams:{baseWidth:4,minTraceWidth:.5,maxTraceWidth:18,traceColor:'#111111',traceOpacity:1,secondaryTraceColor:'#118ab2',secondaryTraceOpacity:.55,canvasColor:'#ffffff',effectStrength:65,echoCount:4,echoOffset:9,seismicScale:18},
     mappings:[
       mapping('velocity','strokeWidth',0,1,.35,1.8,true,'ease'),
       mapping('hesitation','nodeSize',0,1,2,14,false,'ease')
@@ -763,13 +835,14 @@ let state={
   timelineZoom:1,
   previewMode:'full',
   checkedGestures:new Set(),
-  live:{enabled:false,startTime:0,samples:[],fullSamples:[],windowMs:8000,lastRender:0,frozen:false,fade:true,fadeMs:3000,performance:false,recipeIndex:0},
-  camera:{stream:null,raf:0,targetColor:null,lastPoint:null,prevFrame:null},
+  live:{enabled:false,startTime:0,samples:[],fullSamples:[],windowMs:8000,lastRender:0,frozen:false,fade:true,fadeMs:3000,performance:false,recipeIndex:0,lastInputAt:0,inputCount:0,inputRate:0,starting:false},
+  camera:{stream:null,raf:0,targetColor:null,lastPoint:null,prevFrame:null,targetSelected:false,targetLocked:false,targetConfidence:0,minimized:false},
   sensor:{enabled:false,recording:false,startTime:0,samples:[],last:{ax:0,ay:0,az:0,alpha:0,beta:0,gamma:0,gx:0,gy:0,gz:0}},
   history:{undo:[],redo:[],last:null,restoring:false},
   selectedLayerId:null,
   layerDrag:null,
   animationPreview:{playing:false,raf:0,start:0},
+  playbackVideo:{recording:false,cancel:false},
   inspect:{t:null,source:null,index:null},
   saveTimer:null
 };
@@ -832,13 +905,13 @@ function migrateProject(project){
   project.recipes=Array.isArray(project.recipes)&&project.recipes.length?project.recipes:deepClone(builtinRecipes);
   project.recipes.forEach(r=>{
     r.simplify=r.simplify||{essence:20,geoTol:2,motionAware:true};
-    r.styleParams={baseWidth:4,effectStrength:65,echoCount:4,echoOffset:9,seismicScale:18,...(r.styleParams||{})};
+    r.styleParams={baseWidth:4,minTraceWidth:.5,maxTraceWidth:18,traceColor:'#111111',traceOpacity:1,secondaryTraceColor:'#118ab2',secondaryTraceOpacity:.55,canvasColor:'#ffffff',effectStrength:65,echoCount:4,echoOffset:9,seismicScale:18,...(r.styleParams||{})};
     r.mappings=(r.mappings||[]).map(migrateMapping);
   });
   (project.gestures||[]).forEach(g=>{
     g.temporal={reverse:false,normalizeSpeed:false,trimStartPct:0,trimEndPct:100,timeScale:1,removedRanges:[],...(g.temporal||{})};
     g.processing=g.processing||{essence:20,geoTol:2,motionAware:true};
-    g.styleParams={baseWidth:4,effectStrength:65,echoCount:4,echoOffset:9,seismicScale:18,...(g.styleParams||{})};
+    g.styleParams={baseWidth:4,minTraceWidth:.5,maxTraceWidth:18,traceColor:'#111111',traceOpacity:1,secondaryTraceColor:'#118ab2',secondaryTraceOpacity:.55,canvasColor:'#ffffff',effectStrength:65,echoCount:4,echoOffset:9,seismicScale:18,...(g.styleParams||{})};
     g.analysisConfig={pauseSensitivity:50,reversalSensitivity:50,loopSensitivity:50,adaptiveResample:project.captureConfig?.adaptiveResample!==false,noiseFloor:project.captureConfig?.noiseFloor||0,...(g.analysisConfig||{})};
     g.spatial={x:0,y:0,rotate:0,scale:1,motionScale:1,mirrorX:false,mirrorY:false,normalize:'none',...(g.spatial||{})};
     g.tags=Array.isArray(g.tags)?g.tags:[];
@@ -1077,7 +1150,12 @@ const SourceManager={
     state.capture.sourceMode=mode;document.querySelectorAll('[data-source]').forEach(b=>b.classList.toggle('source-active',b.dataset.source===mode));
     const d={pointer:'Pointer input · mouse, touch, or stylus pressure.',multitouch:'Multitouch · two contacts plus midpoint, distance, rotation, and relative velocity.',camera:'Camera tracking · bright point or sampled color target.',sensor:'Device motion/orientation · signal channels, not absolute position.',import:'Import timestamped CSV or JSON motion datasets.',live:'LIVE pointer source · immediate motion-to-mark.'};
     els.sourceStatus.textContent=d[mode]||mode;els.sourceBadge.textContent=mode.toUpperCase();els.sourceBadge.classList.remove('hidden');
-    if(mode==='import')els.motionDataFile.click();if(mode==='camera')CameraEngine.start();if(mode==='sensor')SensorEngine.enable();
+    if(mode==='import')els.motionDataFile.click();
+    if(mode==='camera'){
+      setStateLabel('CAMERA STARTING');
+      CameraEngine.start().then(ok=>setStateLabel(ok?'CAMERA READY':'CAMERA ERROR'));
+    }
+    if(mode==='sensor')SensorEngine.enable();
   }
 };
 const MultiTouchEngine={
@@ -1114,22 +1192,61 @@ const SensorEngine={
 };
 const CameraEngine={
   async start(){
-    if(state.camera.stream){els.cameraStage.classList.remove('hidden');return}
-    try{state.camera.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});state.camera.prevFrame=null;els.webcamVideo.srcObject=state.camera.stream;els.cameraStage.classList.remove('hidden');els.signalReadout.textContent='Camera active. Tracking '+els.cameraTracker.value+'.';this.loop();return true}catch(e){els.signalReadout.textContent='Camera unavailable: '+e.message;return false}
+    if(state.camera.stream){this.restore();els.cameraStage.classList.remove('hidden');els.signalReadout.textContent='Camera ready. Tap a target, lock it, then press RECORD.';this.updateTargetStatus();return true}
+    try{
+      if(!navigator.mediaDevices?.getUserMedia)throw Error('getUserMedia is not supported in this browser');
+      state.camera.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});state.camera.prevFrame=null;els.webcamVideo.srcObject=state.camera.stream;this.restore();els.cameraStage.classList.remove('hidden');try{await els.webcamVideo.play()}catch(e){}
+      els.signalReadout.textContent='Camera ready. Tap a target, lock it, then press RECORD.';this.updateTargetStatus();this.loop();return true
+    }catch(e){state.camera.stream=null;els.webcamVideo.srcObject=null;els.cameraStage.classList.add('hidden');els.signalReadout.textContent='Camera unavailable: '+e.message;return false}
   },
-  stop(){cancelAnimationFrame(state.camera.raf);state.camera.stream?.getTracks().forEach(t=>t.stop());state.camera.stream=null;state.camera.prevFrame=null;els.webcamVideo.srcObject=null;els.cameraStage.classList.add('hidden')},
-  sampleColor(){const c=els.webcamOverlay,ctx=c.getContext('2d'),v=els.webcamVideo;if(!v.videoWidth)return;ctx.drawImage(v,0,0,c.width,c.height);const d=ctx.getImageData(c.width/2,c.height/2,1,1).data;state.camera.targetColor=[d[0],d[1],d[2]];els.cameraTracker.value='color';els.signalReadout.textContent=`Color target RGB ${d[0]}, ${d[1]}, ${d[2]}`},
+  stop(){
+    cancelAnimationFrame(state.camera.raf);state.camera.stream?.getTracks().forEach(t=>t.stop());state.camera.stream=null;state.camera.prevFrame=null;state.camera.targetConfidence=0;els.webcamVideo.srcObject=null;els.cameraStage.classList.add('hidden');this.updateTargetStatus();
+    if(state.capture.sourceMode==='camera'&&(state.capture.recording||state.capture.armed)){state.capture.recording=false;state.capture.armed=false;state.capture.current=[];els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';setStateLabel('READY');MobileUI?.syncRecord?.()}
+  },
+  sampleAt(x,y){
+    const c=els.webcamOverlay,ctx=c.getContext('2d'),v=els.webcamVideo;if(!v.videoWidth)return;
+    ctx.drawImage(v,0,0,c.width,c.height);const sx=clamp(Math.round(x),2,c.width-3),sy=clamp(Math.round(y),2,c.height-3),d=ctx.getImageData(sx-2,sy-2,5,5).data;let r=0,g=0,b=0,n=0;
+    for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];n++}
+    state.camera.targetColor=[r/n,g/n,b/n];state.camera.targetSelected=true;state.camera.targetLocked=false;state.camera.targetConfidence=0;state.camera.lastPoint={t:0,x:sx/c.width*1000,y:sy/c.height*700,pressure:0,source:'camera-color',confidence:1};
+    els.cameraTracker.value='color';els.lockCameraTarget.classList.remove('active');els.lockCameraTarget.textContent='LOCK TARGET';els.signalReadout.textContent=`Target sampled · RGB ${state.camera.targetColor.map(v=>Math.round(v)).join(', ')}. Press LOCK TARGET.`;this.updateTargetStatus()
+  },
+  sampleColor(){const c=els.webcamOverlay;this.sampleAt(c.width/2,c.height/2)},
+  toggleLock(){
+    if(els.cameraTracker.value==='color'&&!state.camera.targetSelected){els.signalReadout.textContent='Tap the object or colored marker in the camera preview first.';return}
+    state.camera.targetLocked=!state.camera.targetLocked;els.lockCameraTarget.classList.toggle('active',state.camera.targetLocked);els.lockCameraTarget.textContent=state.camera.targetLocked?'TARGET LOCKED':'LOCK TARGET';this.updateTargetStatus()
+  },
+  updateTargetStatus(){
+    if(!els.cameraTargetStatus)return;const mode=els.cameraTracker.value;const label=mode==='color'?(state.camera.targetSelected?(state.camera.targetLocked?'locked color target':'color target selected'):'color target not selected'):mode==='light'?'brightest point':mode==='motion'?'motion centroid':mode;
+    els.cameraTargetStatus.textContent=`TRACKED POINT · ${label} · confidence ${state.camera.targetConfidence?Math.round(state.camera.targetConfidence*100)+'%':'—'}`;els.trackedPointLabel.classList.toggle('locked',!!state.camera.targetLocked)
+    },
+  minimize(){
+    state.camera.minimized=true;els.cameraStage.classList.add('minimized');els.restoreCamera.classList.remove('hidden')
+  },
+  restore(){
+    state.camera.minimized=false;els.cameraStage.classList.remove('minimized');els.restoreCamera.classList.add('hidden')
+  },
+  hidePreview(){
+    els.cameraStage.classList.add('hidden');state.camera.minimized=false;els.cameraStage.classList.remove('minimized');els.restoreCamera.classList.add('hidden')
+  },
   loop(){
     if(!state.camera.stream)return;const v=els.webcamVideo,c=els.webcamOverlay,ctx=c.getContext('2d');
-    if(v.videoWidth){ctx.drawImage(v,0,0,c.width,c.height);const img=ctx.getImageData(0,0,c.width,c.height),data=img.data,step=4,mode=els.cameraTracker.value,target=state.camera.targetColor;let best=-Infinity,bx=c.width/2,by=c.height/2;
+    if(v.videoWidth){
+      ctx.drawImage(v,0,0,c.width,c.height);const img=ctx.getImageData(0,0,c.width,c.height),data=img.data,step=4,mode=els.cameraTracker.value,target=state.camera.targetColor;let best=-Infinity,bx=c.width/2,by=c.height/2;
       if(mode==='motion'&&state.camera.prevFrame){
         let sx=0,sy=0,sw=0;for(let y=0;y<c.height;y+=step)for(let x=0;x<c.width;x+=step){const i=(y*c.width+x)*4,lum=(data[i]+data[i+1]+data[i+2])/3,prev=state.camera.prevFrame[i]||lum,diff=Math.abs(lum-prev);if(diff>24){sx+=x*diff;sy+=y*diff;sw+=diff}}if(sw>0){bx=sx/sw;by=sy/sw;best=clamp(sw/(c.width*c.height*.3),0,255)}
       }else{
-        for(let y=0;y<c.height;y+=step)for(let x=0;x<c.width;x+=step){const i=(y*c.width+x)*4,r=data[i],g=data[i+1],b=data[i+2],score=mode==='color'&&target?255-Math.sqrt((r-target[0])**2+(g-target[1])**2+(b-target[2])**2)/1.73:(r+g+b)/3;if(score>best){best=score;bx=x;by=y}}
+        const locked=mode==='color'&&state.camera.targetLocked&&state.camera.lastPoint,lp=state.camera.lastPoint,rad=locked?Math.max(45,Math.min(c.width,c.height)*.28):Infinity;
+        for(let y=0;y<c.height;y+=step)for(let x=0;x<c.width;x+=step){
+          if(locked){const lx=lp.x/1000*c.width,ly=lp.y/700*c.height;if(Math.hypot(x-lx,y-ly)>rad)continue}
+          const i=(y*c.width+x)*4,r=data[i],g=data[i+1],b=data[i+2],score=mode==='color'&&target?255-Math.sqrt((r-target[0])**2+(g-target[1])**2+(b-target[2])**2)/1.73:(r+g+b)/3;if(score>best){best=score;bx=x;by=y}
+        }
       }
-      state.camera.prevFrame=new Uint8ClampedArray(data);ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle='#ff5c35';ctx.lineWidth=2;ctx.beginPath();ctx.arc(bx,by,8,0,Math.PI*2);ctx.stroke();const s={t:0,x:bx/c.width*1000,y:by/c.height*700,pressure:0,source:'camera-'+mode,confidence:clamp(best/255,0,1)};state.camera.lastPoint=s;els.signalReadout.textContent=`Camera ${mode} · confidence ${Math.round(s.confidence*100)}% · ${Math.round(s.x)}, ${Math.round(s.y)}`;
-      if(state.capture.recording&&state.capture.sourceMode==='camera'){s.t=performance.now()-state.capture.startTime;const last=state.capture.current.at(-1);if(!last||s.t-last.t>25){state.capture.current.push({...s});renderLiveCapture()}}if(state.live.enabled&&state.capture.sourceMode==='camera'){s.t=performance.now()-state.live.startTime;LiveEngine.push({...s})}
-    }state.camera.raf=requestAnimationFrame(()=>this.loop())
+      state.camera.prevFrame=new Uint8ClampedArray(data);ctx.clearRect(0,0,c.width,c.height);const confidence=clamp(best/255,0,1);state.camera.targetConfidence=confidence;ctx.strokeStyle=confidence>=.6?'#16c784':confidence>=.3?'#ffb020':'#ff4d4d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(bx,by,9,0,Math.PI*2);ctx.stroke();ctx.fillStyle=ctx.strokeStyle;ctx.font='10px ui-monospace';ctx.fillText(`${Math.round(confidence*100)}%`,bx+12,by-10);
+      const s={t:0,x:bx/c.width*1000,y:by/c.height*700,pressure:0,source:'camera-'+mode,confidence};state.camera.lastPoint=s;this.updateTargetStatus();els.signalReadout.textContent=`Camera ${mode} · ${Math.round(confidence*100)}% confidence · ${state.camera.targetLocked?'target locked':'target unlocked'}`;
+      if(state.capture.recording&&state.capture.sourceMode==='camera'){s.t=performance.now()-state.capture.startTime;const last=state.capture.current.at(-1);if(!last||s.t-last.t>25){state.capture.current.push({...s});renderLiveCapture()}}
+      if(state.live.enabled&&state.capture.sourceMode==='camera'){s.t=performance.now()-state.live.startTime;LiveEngine.push({...s})}
+    }
+    state.camera.raf=requestAnimationFrame(()=>this.loop())
   }
 };
 const ImportEngine={
@@ -1142,20 +1259,57 @@ const ImportEngine={
   async file(f){const raw=await f.text();let rows;if(f.name.toLowerCase().endsWith('.json')){const obj=JSON.parse(raw);rows=Array.isArray(obj)?obj:(obj.samples||obj.data||obj.gesture?.rawSamples);if(!Array.isArray(rows))throw Error('JSON must contain an array, samples, data, or gesture.rawSamples.')}else rows=this.parseCSV(raw);CaptureEngine.commit(this.samples(rows),'import',f.name.replace(/\.[^.]+$/,''))}
 };
 const LiveEngine={
-  toggle(){state.live.enabled=!state.live.enabled;state.live.startTime=performance.now();state.live.frozen=false;if(state.live.enabled){state.live.samples=[];state.live.fullSamples=[];this.syncRecipe()}else if(state.live.performance)this.performance(false);els.liveBtn.classList.toggle('live-on',state.live.enabled);els.liveToggle.classList.toggle('live-on',state.live.enabled);UndoManager.updateButtons();els.liveToggle.textContent=state.live.enabled?'EXIT LIVE':'ENTER LIVE';setStateLabel(state.live.enabled?'LIVE':'READY');renderAll()},
-  push(sample){if(!state.live.enabled||state.live.frozen)return;const last=state.live.fullSamples.at(-1);if(last&&sample.t<=last.t)sample.t=last.t+1;state.live.fullSamples.push({...sample});if(state.live.fullSamples.length>200000)state.live.fullSamples.splice(0,1000);state.live.samples.push(sample);const cutoff=sample.t-state.live.windowMs;while(state.live.samples.length>2&&state.live.samples[0].t<cutoff)state.live.samples.shift();if(performance.now()-state.live.lastRender>30){state.live.lastRender=performance.now();this.render()}}, 
+  async toggle(){
+    if(state.live.enabled||state.live.starting){if(state.live.enabled)this.stop();return}
+    state.live.starting=true;this.status('starting '+(state.capture.sourceMode||'pointer')+'…');els.liveToggle.textContent='STARTING…';els.liveBtn.classList.add('live-on');
+    const ok=await this.ensureSourceReady();
+    state.live.starting=false;
+    if(!ok){els.liveToggle.textContent='START LIVE DRAW';els.liveBtn.classList.remove('live-on');els.liveToggle.classList.remove('live-on');setStateLabel('LIVE NOT READY');return}
+    state.live.enabled=true;state.live.startTime=performance.now();state.live.frozen=false;state.live.samples=[];state.live.fullSamples=[];state.live.lastInputAt=0;state.live.inputCount=0;state.live.inputRate=0;this.syncRecipe();
+    els.liveBtn.classList.add('live-on');els.liveToggle.classList.add('live-on');els.liveToggle.textContent='EXIT LIVE';setStateLabel('LIVE');this.status('armed · waiting for '+(state.capture.sourceMode||'pointer')+' input');renderAll()
+  },
+  stop(){
+    state.live.enabled=false;state.live.starting=false;if(state.live.performance)this.performance(false);els.liveBtn.classList.remove('live-on');els.liveToggle.classList.remove('live-on');els.liveToggle.textContent='START LIVE DRAW';setStateLabel('READY');this.status('idle');renderAll()
+  },
+  async ensureSourceReady(){
+    const mode=state.capture.sourceMode||'pointer';
+    if(mode==='pointer'||mode==='live')return true;
+    if(mode==='camera'){
+      if(els.cameraTracker.value==='color'&&!state.camera.targetLocked){els.signalReadout.textContent=state.camera.targetSelected?'Lock the camera target before entering LIVE.':'Tap a camera target and lock it before entering LIVE.';this.status('camera target not ready');return false}
+      const ok=await CameraEngine.start();if(ok){CameraEngine.restore();this.status('camera ready')}return !!ok
+    }
+    if(mode==='sensor'){const ok=await SensorEngine.enable();this.status(ok?'sensor ready':'sensor permission unavailable');return !!ok}
+    if(mode==='multitouch')return true;
+    this.status('source '+mode+' is not a LIVE input');return false
+  },
+  status(msg){
+    if(els.liveInputStatus)els.liveInputStatus.innerHTML=`<b>LIVE INPUT</b> · ${msg}`
+  },
+  push(sample){
+    if(!state.live.enabled||state.live.frozen)return;
+    const now=performance.now(),last=state.live.fullSamples.at(-1);if(last&&sample.t<=last.t)sample.t=last.t+1;
+    state.live.fullSamples.push({...sample});if(state.live.fullSamples.length>200000)state.live.fullSamples.splice(0,1000);state.live.samples.push(sample);
+    state.live.inputCount++;if(state.live.lastInputAt){const dt=now-state.live.lastInputAt;if(dt>0)state.live.inputRate=state.live.inputRate*.8+(1000/dt)*.2}state.live.lastInputAt=now;
+    const cutoff=sample.t-state.live.windowMs;while(state.live.samples.length>2&&state.live.samples[0].t<cutoff)state.live.samples.shift();
+    this.status(`${sample.source||state.capture.sourceMode} · ${Math.round(state.live.inputRate||0)} Hz · ${state.live.samples.length} samples`);
+    if(now-state.live.lastRender>30){state.live.lastRender=now;this.render()}
+  },
   pointer(e){if(!state.live.enabled||!['pointer','live'].includes(state.capture.sourceMode))return;const r=els.gestureSvg.getBoundingClientRect(),s={t:performance.now()-state.live.startTime,x:(e.clientX-r.left)/r.width*1000,y:(e.clientY-r.top)/r.height*700,pressure:e.pressure||0,source:e.pointerType||'pointer',confidence:1};this.push(s)},
   recipe(){return state.project.recipes[state.live.recipeIndex]||state.project.recipes[0]||null},
   syncRecipe(){const r=this.recipe();if(els.liveRecipe&&r)els.liveRecipe.value=r.id;els.performanceRecipe.textContent=(r?.name||selectedGesture()?.style||'INK').toUpperCase()},
   setRecipeById(id){const i=state.project.recipes.findIndex(r=>r.id===id);if(i>=0){state.live.recipeIndex=i;this.syncRecipe();this.render()}},
   stepRecipe(dir){if(!state.project.recipes.length)return;state.live.recipeIndex=(state.live.recipeIndex+dir+state.project.recipes.length)%state.project.recipes.length;this.syncRecipe();this.render()},
-  render(){if(state.live.samples.length<2)return;const a=MotionAnalyzer.analyze(state.live.samples),base=selectedGesture(),recipe=this.recipe(),g={id:'live',name:'LIVE',rawSamples:state.live.samples,analysis:a,style:recipe?.style||base?.style||'ink',processing:recipe?.simplify||base?.processing||{essence:5,geoTol:1,motionAware:true},styleParams:{...(base?.styleParams||{baseWidth:4,effectStrength:65}),...(recipe?.styleParams||{})},mappings:recipe?.mappings||base?.mappings||[],spatial:{x:0,y:0,rotate:0,scale:1,motionScale:1,mirrorX:false,mirrorY:false,normalize:'none'}};StyleEngine.render(g,1);els.pathLayer.classList.add('live-trace');if(state.live.fade){const paths=[...els.pathLayer.querySelectorAll('path')],fadeFraction=clamp(state.live.fadeMs/Math.max(1,state.live.windowMs),.03,1);paths.forEach((p,i)=>{const q=i/Math.max(1,paths.length-1),age=1-q,op=age>=fadeFraction?.08:clamp(.08+(1-age/fadeFraction)*.92,.08,1);p.style.opacity=String(op)})}els.performanceSource.textContent=(state.capture.sourceMode||'pointer').toUpperCase();this.syncRecipe()},
+  render(){if(state.live.samples.length<2)return;const a=MotionAnalyzer.analyze(state.live.samples),base=selectedGesture(),recipe=this.recipe(),g={id:'live',name:'LIVE',rawSamples:state.live.samples,analysis:a,style:recipe?.style||base?.style||'ink',processing:recipe?.simplify||base?.processing||{essence:5,geoTol:1,motionAware:true},styleParams:{...(recipe?.styleParams||{}),...(base?.styleParams||{baseWidth:4,effectStrength:65})},mappings:recipe?.mappings||base?.mappings||[],spatial:{x:0,y:0,rotate:0,scale:1,motionScale:1,mirrorX:false,mirrorY:false,normalize:'none'}};StyleEngine.render(g,1);els.pathLayer.classList.add('live-trace');if(state.live.fade){const paths=[...els.pathLayer.querySelectorAll('path')],fadeFraction=clamp(state.live.fadeMs/Math.max(1,state.live.windowMs),.03,1);paths.forEach((p,i)=>{const q=i/Math.max(1,paths.length-1),age=1-q,op=age>=fadeFraction?.08:clamp(.08+(1-age/fadeFraction)*.92,.08,1);p.style.opacity=String(op)})}els.performanceSource.textContent=(state.capture.sourceMode||'pointer').toUpperCase();this.syncRecipe()},
   saveWindow(){if(state.live.samples.length<3)return;CaptureEngine.commit(state.live.samples.map(p=>({...p,t:p.t-state.live.samples[0].t})),'live','Live Window');renderAll()},
   savePerformance(){if(state.live.fullSamples.length<3)return;CaptureEngine.commit(state.live.fullSamples.map(p=>({...p,t:p.t-state.live.fullSamples[0].t})),'live-performance','Live Performance');renderAll()},
   clear(){state.live.samples=[];state.live.fullSamples=[];state.live.startTime=performance.now();els.pathLayer.classList.remove('live-trace');renderAll()},
   freeze(){state.live.frozen=!state.live.frozen;els.freezeLive.classList.toggle('active',state.live.frozen);els.freezeLive.textContent=state.live.frozen?'UNFREEZE':'FREEZE'},
   performance(force=null){state.live.performance=force===null?!state.live.performance:!!force;document.body.classList.toggle('performance-mode',state.live.performance);if(state.live.performance&&!document.fullscreenElement)document.documentElement.requestFullscreen?.().catch(()=>{});if(!state.live.performance&&document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});els.performanceMode.classList.toggle('active',state.live.performance)},
-  setFade(){state.live.fade=!state.live.fade;els.liveFadeToggle.classList.toggle('active',state.live.fade);els.liveFadeToggle.textContent=state.live.fade?'FADE ON':'FADE OFF';this.render()}
+  setFade(){state.live.fade=!state.live.fade;els.liveFadeToggle.classList.toggle('active',state.live.fade);els.liveFadeToggle.textContent=state.live.fade?'FADE ON':'FADE OFF';this.render()},
+  watchdog(){
+    if(!state.live.enabled)return;const age=state.live.lastInputAt?performance.now()-state.live.lastInputAt:Infinity;
+    if(age>1800)this.status(`armed · no ${state.capture.sourceMode||'pointer'} samples received`);
+  }
 };
 
 const CaptureEngine={
@@ -1163,7 +1317,32 @@ const CaptureEngine={
     const mode=state.capture.sourceMode;
     if(mode==='import'){els.motionDataFile.click();return}
     if(mode==='sensor'){if(state.sensor.recording){SensorEngine.stop();return}state.capture.armed=true;SensorEngine.enable().then(ok=>{if(ok){SensorEngine.start();els.recordBtn.classList.add('recording')}else state.capture.armed=false});setWorkflow('capture');return}
-    if(mode==='camera'){if(state.capture.recording){state.capture.recording=false;this.commit(state.capture.current.slice(),'camera');return}CameraEngine.start().then(ok=>{if(!ok)return;state.capture.armed=true;state.capture.recording=true;state.capture.startTime=performance.now();state.capture.current=[];els.recordBtn.classList.add('recording');els.recordBtn.textContent='RECORDING';setStateLabel('RECORDING')});setWorkflow('capture');return}
+    if(mode==='camera'){
+      if(!state.capture.recording&&els.cameraTracker.value==='color'&&!state.camera.targetLocked){els.signalReadout.textContent=state.camera.targetSelected?'Press LOCK TARGET before recording.':'Tap a target in the camera preview, then press LOCK TARGET.';setStateLabel('TARGET NOT LOCKED');return}
+      if(state.capture.recording){
+        const raw=state.capture.current.slice();
+        state.capture.recording=false;state.capture.armed=false;
+        els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';
+        if(raw.length>=3){setStateLabel('CAPTURED');this.commit(raw,'camera','Camera Gesture')}
+        else{state.capture.current=[];setStateLabel('CAMERA READY');renderAll();els.signalReadout.textContent='Camera recorded fewer than 3 tracked samples. Check tracker confidence or target visibility and try again.'}
+        CameraEngine.hidePreview();
+        return
+      }
+      state.capture.armed=true;
+      els.recordBtn.classList.add('recording');els.recordBtn.textContent='STARTING CAMERA…';
+      setStateLabel('CAMERA STARTING');setWorkflow('capture');MobileUI?.syncRecord?.();
+      CameraEngine.start().then(ok=>{
+        if(!ok){
+          state.capture.armed=false;state.capture.recording=false;
+          els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';
+          setStateLabel('CAMERA ERROR');MobileUI?.syncRecord?.();return
+        }
+        state.capture.armed=true;state.capture.recording=true;state.capture.startTime=performance.now();state.capture.current=[];
+        els.recordBtn.classList.add('recording');els.recordBtn.textContent='STOP & SAVE';
+        setStateLabel('RECORDING CAMERA');MobileUI?.syncRecord?.()
+      });
+      return
+    }
     state.capture.armed=!state.capture.armed;state.capture.recording=false;state.capture.current=[];state.capture.pointerId=null;state.capture.multi.clear();state.capture.multiSamples=[];els.recordBtn.classList.toggle('recording',state.capture.armed);els.recordBtn.textContent=state.capture.armed?(mode==='multitouch'?'ARMED — TOUCH':'ARMED — DRAW'):'RECORD';setStateLabel('READY');setWorkflow('capture');
   },
   pointerDown(e){
@@ -1213,7 +1392,7 @@ const CaptureEngine={
   commit(raw,source='pointer',name=null){
     if(!raw||raw.length<3){setStateLabel('READY');state.capture.current=[];renderAll();return}
     const temporal={reverse:false,normalizeSpeed:false,trimStartPct:0,trimEndPct:100,timeScale:1,removedRanges:[]},analysisConfig={pauseSensitivity:50,reversalSensitivity:50,loopSensitivity:50,adaptiveResample:state.project.captureConfig?.adaptiveResample!==false,noiseFloor:state.project.captureConfig?.noiseFloor||0},analysis=MotionAnalyzer.analyze(raw,analysisConfig),baseRecipe=state.project.recipes[0];
-    const g={id:uid(),name:name||`Gesture ${state.project.gestures.length+1}`,created:nowISO(),tags:[],inputSource:source,rawSamples:raw,analysis,temporal,analysisConfig,style:'ink',recipeId:baseRecipe?.id||null,processing:{essence:20,geoTol:2,motionAware:true},styleParams:{baseWidth:4,effectStrength:65,echoCount:4,echoOffset:9,seismicScale:18},mappings:deepClone(baseRecipe?.mappings||[]),spatial:{x:0,y:0,rotate:0,scale:1,motionScale:1,mirrorX:false,mirrorY:false,normalize:'none'}};
+    const g={id:uid(),name:name||`Gesture ${state.project.gestures.length+1}`,created:nowISO(),tags:[],inputSource:source,rawSamples:raw,analysis,temporal,analysisConfig,style:'ink',recipeId:baseRecipe?.id||null,processing:{essence:20,geoTol:2,motionAware:true},styleParams:{baseWidth:4,minTraceWidth:.5,maxTraceWidth:18,traceColor:'#111111',traceOpacity:1,secondaryTraceColor:'#118ab2',secondaryTraceOpacity:.55,canvasColor:'#ffffff',effectStrength:65,echoCount:4,echoOffset:9,seismicScale:18},mappings:deepClone(baseRecipe?.mappings||[]),spatial:{x:0,y:0,rotate:0,scale:1,motionScale:1,mirrorX:false,mirrorY:false,normalize:'none'}};
     state.project.gestures.push(g);state.project.selectedGestureId=g.id;state.capture.current=[];state.capture.armed=false;state.capture.recording=false;els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';state.playback.t=0;setStateLabel('CAPTURED');setWorkflow('simplify');Store.markDirty();syncControlsFromGesture();renderAll();
   }
 };
@@ -1327,9 +1506,17 @@ const MappingEngine={
 };
 
 const StyleEngine={
+  color(g){return g?.styleParams?.traceColor||'#111111'},
+  secondaryColor(g){return g?.styleParams?.secondaryTraceColor||g?.styleParams?.traceColor||'#118ab2'},
+  opacity(g){return clamp(g?.styleParams?.traceOpacity??1,.05,1)},
+  secondaryOpacity(g){return clamp(g?.styleParams?.secondaryTraceOpacity??.55,0,1)},
+  width(g,w){return clamp(w,g?.styleParams?.minTraceWidth??.5,g?.styleParams?.maxTraceWidth??18)},
   render(g, upto=1){
     els.pathLayer.replaceChildren();els.eventLayer.replaceChildren();els.headLayer.replaceChildren();
     if(!g)return;
+    const traceColor=this.color(g),traceOpacity=this.opacity(g),canvasColor=g.styleParams?.canvasColor||'';
+    els.pathLayer.style.color=traceColor;els.pathLayer.style.opacity=String(traceOpacity);
+    if(canvasColor)els.gestureSvg.style.background=canvasColor;
     let all=effectivePoints(g);
     const count=Math.max(2,Math.floor(all.length*clamp(upto,0,1)));
     let pts=all.slice(0,count);
@@ -1370,48 +1557,49 @@ const StyleEngine={
     if(style==='ink'){
       for(let i=1;i<pts.length;i++){
         const a=pts[i-1],b=pts[i],v=clamp(b.velocity/peak,0,1),mv=MappingEngine.visual(g,b);
-        const w=base*lerp(1.9,.45,v*str)*mv.strokeWidth,op=clamp(.94*mv.opacity,0.04,1);
+        const w=this.width(g,base*lerp(1.9,.45,v*str)*mv.strokeWidth),op=clamp(.94*mv.opacity,0.04,1);
         this.addPath(`M ${a.x} ${a.y} L ${b.x} ${b.y}`,{stroke:'currentColor','stroke-width':w,'stroke-linecap':'round','stroke-opacity':op,'stroke-dasharray':mv.dashLength>1?`${mv.dashLength} ${Math.max(2,mv.spacing)}`:'none'});
       }
-    }else this.addPath(this.pathD(pts),{stroke:'currentColor','stroke-width':base,'stroke-linecap':'round','stroke-linejoin':'round'});
+    }else this.addPath(this.pathD(pts),{stroke:'currentColor','stroke-width':this.width(g,base),'stroke-linecap':'round','stroke-linejoin':'round'});
   },
   ribbon(g,pts){
     if(pts.length<2)return;
     const base=(g.styleParams?.baseWidth||4)*2.3,peak=g.analysis.peakVelocity||1,str=(g.styleParams?.effectStrength||65)/100;
     for(let i=1;i<pts.length;i++){
-      const a=pts[i-1],b=pts[i],v=clamp(b.velocity/peak,0,1),mv=MappingEngine.visual(g,b),w=base*lerp(.55,1.75,(1-v)*str)*mv.strokeWidth;
+      const a=pts[i-1],b=pts[i],v=clamp(b.velocity/peak,0,1),mv=MappingEngine.visual(g,b),w=this.width(g,base*lerp(.55,1.75,(1-v)*str)*mv.strokeWidth);
       this.addPath(`M ${a.x} ${a.y} L ${b.x} ${b.y}`,{stroke:'currentColor','stroke-width':w,'stroke-linecap':'butt','stroke-opacity':clamp(.72*mv.opacity,.05,1)});
     }
   },
   pulse(g,pts){
-    this.addPath(this.pathD(pts),{stroke:'currentColor','stroke-width':1.2,'stroke-opacity':.35});
+    const base=g.styleParams?.baseWidth||4;
+    this.addPath(this.pathD(pts),{stroke:'currentColor','stroke-width':this.width(g,base*.45),'stroke-opacity':.35});
     let carry=0;
     for(let i=1;i<pts.length;i++){
       carry+=dist(pts[i-1],pts[i]);const mv=MappingEngine.visual(g,pts[i]),spacing=Math.max(2,mv.spacing);
       if(carry<spacing)continue;carry=0;
-      const c=document.createElementNS(SVG_NS,'circle');c.setAttribute('cx',pts[i].x);c.setAttribute('cy',pts[i].y);c.setAttribute('r',clamp(mv.nodeSize,1,28));c.setAttribute('fill','none');c.setAttribute('stroke','currentColor');c.setAttribute('stroke-opacity',clamp(mv.opacity,.08,1));c.setAttribute('vector-effect','non-scaling-stroke');els.pathLayer.appendChild(c);
+      const c=document.createElementNS(SVG_NS,'circle');c.setAttribute('cx',pts[i].x);c.setAttribute('cy',pts[i].y);c.setAttribute('r',clamp(mv.nodeSize,1,28));c.setAttribute('fill','none');c.setAttribute('stroke','currentColor');c.setAttribute('stroke-opacity',clamp(mv.opacity,.08,1));c.setAttribute('stroke-width',this.width(g,Math.max(.5,base*.32)));c.setAttribute('vector-effect','non-scaling-stroke');els.pathLayer.appendChild(c);
     }
   },
   plotter(g,pts){
-    const geom=PlotterEngine.geometry(g),visibleEnd=pts.at(-1)?.t??Infinity;
-    geom.paths.map(path=>path.filter(p=>p.t<=visibleEnd)).filter(path=>path.length>1).forEach(path=>this.addPath(this.pathD(path),{stroke:'currentColor','stroke-width':state.project.plotter?.penWidth||1,'stroke-linecap':'round','stroke-linejoin':'round'}));
+    const geom=PlotterEngine.geometry(g),visibleEnd=pts.at(-1)?.t??Infinity,base=g.styleParams?.baseWidth||4,displayWidth=els.plotterSafe.checked?(state.project.plotter?.penWidth||1):base;
+    geom.paths.map(path=>path.filter(p=>p.t<=visibleEnd)).filter(path=>path.length>1).forEach(path=>this.addPath(this.pathD(path),{stroke:'currentColor','stroke-width':this.width(g,displayWidth),'stroke-linecap':'round','stroke-linejoin':'round'}));
     g.analysis.pauses.forEach(e=>{const p=g.analysis.samples[e.i]; if(!p)return; const mv=MappingEngine.visual(g,p),r=clamp(mv.nodeSize+Math.min(10,e.duration/60),3,20);const c=document.createElementNS(SVG_NS,'circle');c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);c.setAttribute('r',r);c.setAttribute('fill','none');c.setAttribute('stroke','currentColor');c.setAttribute('vector-effect','non-scaling-stroke');els.pathLayer.appendChild(c)});
-    g.analysis.reversals.forEach(e=>{const p=g.analysis.samples[e.i];if(!p)return;const q=7;this.addPath(`M ${p.x-q} ${p.y-q} L ${p.x+q} ${p.y+q} M ${p.x+q} ${p.y-q} L ${p.x-q} ${p.y+q}`,{stroke:'currentColor','stroke-width':1})});
-    g.analysis.samples.filter(p=>Math.abs(p.jerk)>(g.analysis.peakJerk||1)*.78).filter((_,i)=>i%4===0).forEach(p=>{const a=p.direction+Math.PI/2,q=5+MappingEngine.visual(g,p).hatchDensity*10;this.addPath(`M ${p.x-Math.cos(a)*q} ${p.y-Math.sin(a)*q} L ${p.x+Math.cos(a)*q} ${p.y+Math.sin(a)*q}`,{stroke:'currentColor','stroke-width':.8})})
+    g.analysis.reversals.forEach(e=>{const p=g.analysis.samples[e.i];if(!p)return;const q=7;this.addPath(`M ${p.x-q} ${p.y-q} L ${p.x+q} ${p.y+q} M ${p.x+q} ${p.y-q} L ${p.x-q} ${p.y+q}`,{stroke:'currentColor','stroke-width':this.width(g,Math.max(.5,base*.28))})});
+    g.analysis.samples.filter(p=>Math.abs(p.jerk)>(g.analysis.peakJerk||1)*.78).filter((_,i)=>i%4===0).forEach(p=>{const a=p.direction+Math.PI/2,q=5+MappingEngine.visual(g,p).hatchDensity*10;this.addPath(`M ${p.x-Math.cos(a)*q} ${p.y-Math.sin(a)*q} L ${p.x+Math.cos(a)*q} ${p.y+Math.sin(a)*q}`,{stroke:'currentColor','stroke-width':this.width(g,Math.max(.4,base*.22))})})
   },
   constellation(g,pts){
-    const sig=[];
+    const base=g.styleParams?.baseWidth||4,sig=[];
     g.analysis.pauses.forEach(e=>sig.push(g.analysis.samples[e.i]));g.analysis.reversals.forEach(e=>sig.push(g.analysis.samples[e.i]));g.analysis.loops.forEach(e=>sig.push(g.analysis.samples[e.i]));
     for(let i=2;i<g.analysis.samples.length-1;i++){const p=g.analysis.samples[i];if(p.velocity>g.analysis.samples[i-1].velocity&&p.velocity>g.analysis.samples[i+1].velocity&&p.velocity>g.analysis.peakVelocity*.72)sig.push(p)}
     sig.push(g.analysis.samples[0],g.analysis.samples[g.analysis.samples.length-1]);sig.sort((a,b)=>a.t-b.t);
     const maxT=pts.at(-1)?.t??Infinity,visible=sig.filter(p=>p.t<=maxT);
-    this.addPath(this.pathD(visible),{stroke:'currentColor','stroke-width':1.2,'stroke-opacity':.65});
-    visible.forEach((p,i)=>{const mv=MappingEngine.visual(g,p),c=document.createElementNS(SVG_NS,'circle');c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);c.setAttribute('r',clamp(mv.nodeSize*(i===0||i===visible.length-1?1.35:1),2,28));c.setAttribute('fill','var(--canvas)');c.setAttribute('stroke','currentColor');c.setAttribute('vector-effect','non-scaling-stroke');els.pathLayer.appendChild(c)});
+    this.addPath(this.pathD(visible),{stroke:'currentColor','stroke-width':this.width(g,Math.max(.5,base*.4)),'stroke-opacity':.65});
+    visible.forEach((p,i)=>{const mv=MappingEngine.visual(g,p),c=document.createElementNS(SVG_NS,'circle');c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);c.setAttribute('r',clamp(mv.nodeSize*(i===0||i===visible.length-1?1.35:1),2,28));c.setAttribute('fill','var(--canvas)');c.setAttribute('stroke','currentColor');c.setAttribute('stroke-width',this.width(g,Math.max(.5,base*.3)));c.setAttribute('vector-effect','non-scaling-stroke');els.pathLayer.appendChild(c)});
   },
   skeleton(g,pts){
-    const sparse=Simplifier.rdp(pts,12+(g.processing?.essence||20)*.08);
-    this.addPath(this.pathD(sparse),{stroke:'currentColor','stroke-width':2,'stroke-linecap':'square','stroke-linejoin':'miter'});
-    sparse.forEach(p=>{const c=document.createElementNS(SVG_NS,'circle');c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);c.setAttribute('r',2.2);c.setAttribute('fill','currentColor');els.pathLayer.appendChild(c)});
+    const base=g.styleParams?.baseWidth||4,sparse=Simplifier.rdp(pts,12+(g.processing?.essence||20)*.08);
+    this.addPath(this.pathD(sparse),{stroke:'currentColor','stroke-width':this.width(g,base),'stroke-linecap':'square','stroke-linejoin':'miter'});
+    sparse.forEach(p=>{const c=document.createElementNS(SVG_NS,'circle');c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);c.setAttribute('r',Math.max(1.5,base*.62));c.setAttribute('fill','currentColor');els.pathLayer.appendChild(c)});
   },
   seismic(g,pts){
     if(pts.length<2)return;
@@ -1421,17 +1609,18 @@ const StyleEngine={
       const j=clamp(Math.abs(p.jerk)/(g.analysis.peakJerk||1),0,1),d=amp*(j*.35+mv.displacement);
       return {...p,x:p.x+Math.cos(a)*d*Math.sin(i*1.77),y:p.y+Math.sin(a)*d*Math.sin(i*1.77)};
     });
-    this.addPath(this.pathD(displaced),{stroke:'currentColor','stroke-width':g.styleParams?.baseWidth||2,'stroke-linejoin':'round','stroke-linecap':'round'});
+    this.addPath(this.pathD(displaced),{stroke:'currentColor','stroke-width':this.width(g,g.styleParams?.baseWidth||2),'stroke-linejoin':'round','stroke-linecap':'round'});
   },
   echo(g,pts){
     const count=clamp(g.styleParams?.echoCount||4,2,10),off=g.styleParams?.echoOffset||9;
     for(let e=count-1;e>=0;e--){
-      const shifted=pts.map(p=>({...p,x:p.x+e*off,y:p.y+e*off*.55}));
-      this.addPath(this.pathD(shifted),{stroke:'currentColor','stroke-width':g.styleParams?.baseWidth||2,'stroke-opacity':clamp((1-e/count)*.75+.08,.08,.9)});
+      const shifted=pts.map(p=>({...p,x:p.x+e*off,y:p.y+e*off*.55})),front=e===0;
+      this.addPath(this.pathD(shifted),{stroke:front?this.color(g):this.secondaryColor(g),'stroke-width':this.width(g,g.styleParams?.baseWidth||2),'stroke-opacity':front?1:clamp(((1-e/count)*.75+.08)*this.secondaryOpacity(g),.02,1)});
     }
   },
   notation(g,pts){
-    this.addPath(this.pathD(pts),{stroke:'currentColor','stroke-width':1,'stroke-opacity':.28});
+    const base=g.styleParams?.baseWidth||4;
+    this.addPath(this.pathD(pts),{stroke:'currentColor','stroke-width':this.width(g,Math.max(.5,base*.35)),'stroke-opacity':.28});
     const maxT=pts.at(-1)?.t??Infinity,events=[
       ...g.analysis.pauses.map(e=>({type:'○ HOLD',...e})),
       ...g.analysis.reversals.map(e=>({type:'↔ SNAP',...e})),
@@ -1664,7 +1853,7 @@ const LayerEngine={
   },
   render(){
     els.pathLayer.replaceChildren();els.eventLayer.replaceChildren();els.headLayer.replaceChildren();
-    this.sceneInstances().forEach((it,idx)=>{if(it.points.length<2)return;const p=document.createElementNS(SVG_NS,'path');p.setAttribute('d',StyleEngine.pathD(it.points));p.setAttribute('fill','none');p.setAttribute('stroke','currentColor');p.setAttribute('stroke-width',String(it.g.styleParams?.baseWidth||2));p.setAttribute('stroke-linecap','round');p.setAttribute('stroke-linejoin','round');p.setAttribute('opacity',it.opacity);p.setAttribute('vector-effect','non-scaling-stroke');if(it.layer?.id){p.dataset.layerId=it.layer.id;p.style.pointerEvents='stroke';if(it.layer.id===state.selectedLayerId)p.classList.add('layer-path-selected')}els.pathLayer.appendChild(p)})
+    this.sceneInstances().forEach((it,idx)=>{if(it.points.length<2)return;const p=document.createElementNS(SVG_NS,'path');p.setAttribute('d',StyleEngine.pathD(it.points));p.setAttribute('fill','none');p.setAttribute('stroke',it.g.styleParams?.traceColor||'#111111');p.setAttribute('stroke-width',String(clamp(it.g.styleParams?.baseWidth||2,it.g.styleParams?.minTraceWidth??.5,it.g.styleParams?.maxTraceWidth??18)));p.setAttribute('stroke-linecap','round');p.setAttribute('stroke-linejoin','round');p.setAttribute('opacity',(it.opacity*(it.g.styleParams?.traceOpacity??1)).toFixed(3));p.setAttribute('vector-effect','non-scaling-stroke');if(it.layer?.id){p.dataset.layerId=it.layer.id;p.style.pointerEvents='stroke';if(it.layer.id===state.selectedLayerId)p.classList.add('layer-path-selected')}els.pathLayer.appendChild(p)})
   }
 };
 
@@ -1677,8 +1866,9 @@ const SceneEngine={
   svg(animated=false){
     const scene=this.active(),duration=Math.max(.5,+state.project.animation?.duration||5),mode=state.project.animation?.mode||'draw',repeats=clamp(+state.project.animation?.repeats||1,1,20),ping=!!state.project.animation?.pingPong;
     let body='';scene.forEach((it,i)=>{if(it.points.length<2)return;const d=StyleEngine.pathD(it.points),len=it.points.slice(1).reduce((a,p,j)=>a+dist(it.points[j],p),0),begin=mode==='sequence'?duration*(it.delay||i/Math.max(1,scene.length)):0,dur=mode==='sequence'?duration/Math.max(1,scene.length):duration,values=ping?`${len.toFixed(2)};0;${len.toFixed(2)}`:`${len.toFixed(2)};0`;
-      if(animated)body+=`<path d="${d}" fill="none" stroke="#111" stroke-width="${it.g.styleParams?.baseWidth||2}" opacity="${it.opacity}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${len.toFixed(2)}" stroke-dashoffset="${len.toFixed(2)}"><animate attributeName="stroke-dashoffset" values="${values}" dur="${dur.toFixed(2)}s" begin="${begin.toFixed(2)}s" repeatCount="${repeats}" fill="freeze"/></path>`;
-      else body+=`<path d="${d}" fill="none" stroke="#111" stroke-width="${it.g.styleParams?.baseWidth||2}" opacity="${it.opacity}" stroke-linecap="round" stroke-linejoin="round"/>`
+      const sc=it.g.styleParams?.traceColor||'#111111',so=it.g.styleParams?.traceOpacity??1,sw=clamp(it.g.styleParams?.baseWidth||2,it.g.styleParams?.minTraceWidth??.5,it.g.styleParams?.maxTraceWidth??18),op=clamp(it.opacity*so,0,1);
+      if(animated)body+=`<path d="${d}" fill="none" stroke="${sc}" stroke-width="${sw}" opacity="${op}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${len.toFixed(2)}" stroke-dashoffset="${len.toFixed(2)}"><animate attributeName="stroke-dashoffset" values="${values}" dur="${dur.toFixed(2)}s" begin="${begin.toFixed(2)}s" repeatCount="${repeats}" fill="freeze"/></path>`;
+      else body+=`<path d="${d}" fill="none" stroke="${sc}" stroke-width="${sw}" opacity="${op}" stroke-linecap="round" stroke-linejoin="round"/>`
     });
     const meta=xmlEscape(JSON.stringify({application:'GESTURE',version:APP_VERSION,scene:true,crossMap:state.project.crossMap,layers:state.project.layers,composition:state.project.composition}));
     return `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="${SVG_NS}" viewBox="0 0 1000 700" width="1000" height="700"><metadata>${meta}</metadata>${body}</svg>`
@@ -1687,11 +1877,166 @@ const SceneEngine={
 
 const AnimationEngine={
   progress(q){const reps=clamp(+state.project.animation.repeats||1,1,20),ping=!!state.project.animation.pingPong,total=q*reps,cycle=Math.floor(total),local=total-cycle;return ping&&cycle%2?1-local:local},
-  renderPreview(q){const scene=SceneEngine.active(),mode=state.project.animation.mode||'draw',p=this.progress(q);els.pathLayer.replaceChildren();els.eventLayer.replaceChildren();els.headLayer.replaceChildren();scene.forEach((it,i)=>{let local=p;if(mode==='sequence'){const a=it.delay||i/Math.max(1,scene.length),b=a+1/Math.max(1,scene.length);local=clamp((p-a)/Math.max(.001,b-a),0,1)}let pts=it.points;if(mode==='trail'){const end=Math.floor(pts.length*local),span=Math.max(3,Math.floor(pts.length*.18));pts=pts.slice(Math.max(0,end-span),Math.max(2,end))}else pts=pts.slice(0,Math.max(2,Math.floor(pts.length*local)));if(pts.length<2)return;const path=document.createElementNS(SVG_NS,'path');path.setAttribute('d',StyleEngine.pathD(pts));path.setAttribute('fill','none');path.setAttribute('stroke','currentColor');path.setAttribute('stroke-width',String(it.g.styleParams?.baseWidth||2));path.setAttribute('opacity',it.opacity);path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');path.setAttribute('vector-effect','non-scaling-stroke');els.pathLayer.appendChild(path)});els.animationProgress.style.width=`${Math.round(q*100)}%`},
+  renderPreview(q){const scene=SceneEngine.active(),mode=state.project.animation.mode||'draw',p=this.progress(q);els.pathLayer.replaceChildren();els.eventLayer.replaceChildren();els.headLayer.replaceChildren();scene.forEach((it,i)=>{let local=p;if(mode==='sequence'){const a=it.delay||i/Math.max(1,scene.length),b=a+1/Math.max(1,scene.length);local=clamp((p-a)/Math.max(.001,b-a),0,1)}let pts=it.points;if(mode==='trail'){const end=Math.floor(pts.length*local),span=Math.max(3,Math.floor(pts.length*.18));pts=pts.slice(Math.max(0,end-span),Math.max(2,end))}else pts=pts.slice(0,Math.max(2,Math.floor(pts.length*local)));if(pts.length<2)return;const path=document.createElementNS(SVG_NS,'path');path.setAttribute('d',StyleEngine.pathD(pts));path.setAttribute('fill','none');path.setAttribute('stroke',it.g.styleParams?.traceColor||'#111111');path.setAttribute('stroke-width',String(clamp(it.g.styleParams?.baseWidth||2,it.g.styleParams?.minTraceWidth??.5,it.g.styleParams?.maxTraceWidth??18)));path.setAttribute('opacity',clamp(it.opacity*(it.g.styleParams?.traceOpacity??1),0,1));path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');path.setAttribute('vector-effect','non-scaling-stroke');els.pathLayer.appendChild(path)});els.animationProgress.style.width=`${Math.round(q*100)}%`},
   preview(){this.stop();state.animationPreview.playing=true;state.animationPreview.start=performance.now();const dur=Math.max(.5,+state.project.animation.duration||5)*1000*clamp(+state.project.animation.repeats||1,1,20);const tick=()=>{if(!state.animationPreview.playing)return;const q=clamp((performance.now()-state.animationPreview.start)/dur,0,1);this.renderPreview(q);if(q<1)state.animationPreview.raf=requestAnimationFrame(tick);else{state.animationPreview.playing=false;renderGesture();els.animationProgress.style.width='0%'}};tick()},
   stop(){state.animationPreview.playing=false;cancelAnimationFrame(state.animationPreview.raf);els.animationProgress.style.width='0%';renderGesture()},
   animatedSvg(){download(`${safeName(state.project.name)}-animation.svg`,new Blob([SceneEngine.svg(true)],{type:'image/svg+xml'}));els.animationStatus.textContent='Animated SVG exported.'},
   async webm(){const fps=clamp(+state.project.animation.fps||30,12,60),baseDuration=Math.max(.5,+state.project.animation.duration||5),reps=clamp(+state.project.animation.repeats||1,1,20),duration=baseDuration*reps,scene=SceneEngine.active();if(!scene.length)return;const c=document.createElement('canvas');c.width=1000;c.height=700;const ctx=c.getContext('2d'),stream=c.captureStream?.(fps);if(!stream||typeof MediaRecorder==='undefined'){els.animationStatus.textContent='WebM recording is not supported by this browser.';return}let mime='video/webm';if(MediaRecorder.isTypeSupported?.('video/webm;codecs=vp9'))mime='video/webm;codecs=vp9';else if(MediaRecorder.isTypeSupported?.('video/webm;codecs=vp8'))mime='video/webm;codecs=vp8';const chunks=[],rec=new MediaRecorder(stream,{mimeType:mime});rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};rec.onstop=()=>{download(`${safeName(state.project.name)}-animation.webm`,new Blob(chunks,{type:mime}));els.animationStatus.textContent='WebM exported.'};rec.start();const start=performance.now();els.animationStatus.textContent='Rendering WebM…';const frame=()=>{const raw=clamp((performance.now()-start)/(duration*1000),0,1),q=this.progress(raw);ctx.clearRect(0,0,1000,700);ctx.fillStyle='#fff';ctx.fillRect(0,0,1000,700);ctx.strokeStyle='#111';ctx.lineCap='round';ctx.lineJoin='round';scene.forEach((it,i)=>{let local=q;if(state.project.animation.mode==='sequence'){const a=it.delay||i/scene.length,b=a+1/scene.length;local=clamp((q-a)/Math.max(.001,b-a),0,1)}const n=Math.max(2,Math.floor(it.points.length*local));if(n<2)return;ctx.globalAlpha=it.opacity;ctx.lineWidth=it.g.styleParams?.baseWidth||2;ctx.beginPath();ctx.moveTo(it.points[0].x,it.points[0].y);for(let j=1;j<n;j++)ctx.lineTo(it.points[j].x,it.points[j].y);ctx.stroke()});ctx.globalAlpha=1;if(raw<1)requestAnimationFrame(frame);else setTimeout(()=>rec.stop(),120)};requestAnimationFrame(frame)}
+};
+
+
+const PlaybackVideoEngine={
+  config(){
+    return {
+      resolution:els.playbackVideoResolution.value,
+      fps:clamp(Number(els.playbackVideoFps.value)||30,12,60),
+      mode:els.playbackVideoMode.value,
+      background:els.playbackVideoBackground.value,
+      leadIn:Math.max(0,Number(els.playbackLeadIn.value)||0),
+      holdEnd:Math.max(0,Number(els.playbackHoldEnd.value)||0),
+      loop:els.playbackVideoLoop.checked,
+      pingPong:els.playbackVideoPingPong.checked,
+      events:els.playbackVideoEvents.checked,
+      head:els.playbackVideoHead.checked,
+      camera:els.playbackVideoCamera.checked
+    }
+  },
+  dims(cfg){
+    if(cfg.resolution==='720')return {w:1280,h:720};
+    if(cfg.resolution==='1080')return {w:1920,h:1080};
+    return {w:1000,h:700}
+  },
+  currentGesture(){
+    return CrossMapEngine.current()||selectedGesture()
+  },
+  timelineDuration(){
+    const g=this.currentGesture();
+    if(state.project.layersEnabled||state.project.composition?.enabled){
+      const scene=SceneEngine.active();
+      let maxT=0;
+      scene.forEach(it=>{const pts=it.points||[];if(pts.length)maxT=Math.max(maxT,pts.at(-1)?.t||0)});
+      return maxT||Math.max(.5,+state.project.animation?.duration||5)*1000
+    }
+    return g?.analysis?.duration||0
+  },
+  bgColor(cfg,g){
+    if(cfg.background==='transparent')return null;
+    if(cfg.background==='black')return '#000000';
+    if(cfg.background==='white')return '#ffffff';
+    return g?.styleParams?.canvasColor||'#ffffff'
+  },
+  sceneAt(timeMs,cfg){
+    const scene=SceneEngine.active(),out=[];
+    const total=Math.max(1,this.timelineDuration());
+    scene.forEach((it,i)=>{
+      const pts=it.points||[];if(pts.length<2)return;
+      const layer=it.layer||{},offset=Number(layer.timeOffset)||0,speed=Math.max(.01,Number(layer.playbackSpeed)||1);
+      const local=(timeMs-offset)*speed;
+      if(local<0)return;
+      const maxT=pts.at(-1)?.t||total;
+      let shown=pts.filter(p=>(p.t??0)<=local);
+      if(cfg.mode==='head'){
+        shown=shown.slice(-Math.min(8,shown.length))
+      }else if(cfg.mode==='window'){
+        const start=Math.max(0,local-800);shown=pts.filter(p=>(p.t??0)>=start&&(p.t??0)<=local)
+      }
+      if(shown.length>1)out.push({...it,points:shown})
+    });
+    return out
+  },
+  gesturePointsAt(g,timeMs,cfg){
+    if(!g)return [];
+    const pts=effectivePoints(g);
+    let shown=pts.filter(p=>(p.t??0)<=timeMs);
+    if(cfg.mode==='head')shown=shown.slice(-Math.min(8,shown.length));
+    if(cfg.mode==='window'){
+      const start=Math.max(0,timeMs-800);shown=pts.filter(p=>(p.t??0)>=start&&(p.t??0)<=timeMs)
+    }
+    return shown
+  },
+  drawPath(ctx,pts,g,opacity=1){
+    if(pts.length<2)return;
+    const color=g?.styleParams?.traceColor||'#111111',alpha=clamp((g?.styleParams?.traceOpacity??1)*opacity,0,1),base=g?.styleParams?.baseWidth||4,minW=g?.styleParams?.minTraceWidth??.5,maxW=g?.styleParams?.maxTraceWidth??18,style=styleForGesture(g);
+    ctx.save();ctx.strokeStyle=color;ctx.globalAlpha=alpha;ctx.lineCap='round';ctx.lineJoin='round';
+    if(style==='ink'||style==='ribbon'){
+      const peak=g.analysis?.peakVelocity||1,str=(g.styleParams?.effectStrength||65)/100,mul=style==='ribbon'?2.3:1;
+      for(let i=1;i<pts.length;i++){
+        const a=pts[i-1],b=pts[i],v=clamp((b.velocity||0)/peak,0,1),mv=MappingEngine.visual(g,b);
+        let w=base*mul*(style==='ribbon'?lerp(.55,1.75,(1-v)*str):lerp(1.9,.45,v*str))*mv.strokeWidth;
+        w=clamp(w,minW,maxW);ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()
+      }
+    }else{
+      ctx.lineWidth=clamp(base,minW,maxW);ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.stroke()
+    }
+    ctx.restore()
+  },
+  drawEvents(ctx,g,timeMs){
+    if(!g?.analysis)return;
+    ctx.save();ctx.lineWidth=2;
+    const events=[...(g.analysis.pauses||[]).map(e=>({...e,type:'pause'})),...(g.analysis.reversals||[]).map(e=>({...e,type:'turn'})),...(g.analysis.loops||[]).map(e=>({...e,type:'loop'}))];
+    events.filter(e=>e.t<=timeMs).forEach(e=>{
+      const p=g.analysis.samples[e.i];if(!p)return;
+      ctx.strokeStyle=e.type==='pause'?'#f0b429':e.type==='turn'?'#e85d5d':'#2fbf71';ctx.beginPath();ctx.arc(p.x,p.y,7,0,Math.PI*2);ctx.stroke()
+    });ctx.restore()
+  },
+  drawHead(ctx,g,timeMs){
+    if(!g?.analysis?.samples?.length)return;const p=nearestTimeSample(g.analysis.samples,timeMs);if(!p)return;
+    ctx.save();ctx.fillStyle='#2aa7ff';ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,7,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.restore()
+  },
+  drawCamera(ctx){
+    if(els.cameraStage.classList.contains('hidden')||!els.webcamVideo.videoWidth)return;
+    const vw=320,vh=240,x=1000-vw-20,y=700-vh-20;
+    try{ctx.save();ctx.globalAlpha=.92;ctx.drawImage(els.webcamVideo,x,y,vw,vh);ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.strokeRect(x,y,vw,vh);ctx.restore()}catch(e){}
+  },
+  renderFrame(ctx,timeMs,cfg,g){
+    ctx.clearRect(0,0,1000,700);
+    const bg=this.bgColor(cfg,g);if(bg){ctx.fillStyle=bg;ctx.fillRect(0,0,1000,700)}
+    if(state.project.layersEnabled||state.project.composition?.enabled){
+      this.sceneAt(timeMs,cfg).forEach(it=>this.drawPath(ctx,it.points,it.g,it.opacity??1))
+    }else{
+      const pts=this.gesturePointsAt(g,timeMs,cfg);this.drawPath(ctx,pts,g,1)
+    }
+    if(cfg.events&&!state.project.layersEnabled&&!state.project.composition?.enabled)this.drawEvents(ctx,g,timeMs);
+    if(cfg.head&&!state.project.layersEnabled&&!state.project.composition?.enabled)this.drawHead(ctx,g,timeMs);
+    if(cfg.camera)this.drawCamera(ctx)
+  },
+  async export(){
+    if(state.playbackVideo.recording)return;
+    const cfg=this.config(),g=this.currentGesture(),duration=this.timelineDuration();
+    if(!g&&!state.project.layersEnabled&&!state.project.composition?.enabled){els.playbackVideoStatus.textContent='No gesture or scene to record.';return}
+    if(duration<=0){els.playbackVideoStatus.textContent='Playback has no duration.';return}
+    const d=this.dims(cfg),out=document.createElement('canvas');out.width=d.w;out.height=d.h;const outCtx=out.getContext('2d'),stage=document.createElement('canvas');stage.width=1000;stage.height=700;const stageCtx=stage.getContext('2d');
+    if(!out.captureStream||typeof MediaRecorder==='undefined'){els.playbackVideoStatus.textContent='Playback video export is not supported by this browser.';return}
+    const stream=out.captureStream(cfg.fps);let mime='video/webm';if(MediaRecorder.isTypeSupported?.('video/webm;codecs=vp9'))mime='video/webm;codecs=vp9';else if(MediaRecorder.isTypeSupported?.('video/webm;codecs=vp8'))mime='video/webm;codecs=vp8';
+    const chunks=[],rec=new MediaRecorder(stream,{mimeType:mime});rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+    const finish=new Promise(resolve=>rec.onstop=resolve);
+    state.playbackVideo.recording=true;state.playbackVideo.cancel=false;els.playbackVideoStatus.textContent='Preparing playback video…';els.exportPlaybackVideo.disabled=true;
+    rec.start();
+    const segments=[{dir:1}];if(cfg.pingPong)segments.push({dir:-1});if(cfg.loop)segments.push({dir:1});
+    const totalPlayback=segments.length*duration,totalMs=cfg.leadIn*1000+totalPlayback+cfg.holdEnd*1000,start=performance.now();
+    const frame=()=>{
+      if(state.playbackVideo.cancel){rec.stop();return}
+      const elapsed=performance.now()-start;let playElapsed=elapsed-cfg.leadIn*1000,time=0;
+      if(playElapsed<=0)time=0;
+      else if(playElapsed>=totalPlayback)time=segments.at(-1).dir===1?duration:0;
+      else{
+        const seg=Math.min(segments.length-1,Math.floor(playElapsed/duration)),local=playElapsed-seg*duration;time=segments[seg].dir===1?local:duration-local
+      }
+      this.renderFrame(stageCtx,clamp(time,0,duration),cfg,g);
+      outCtx.clearRect(0,0,d.w,d.h);
+      const scale=Math.min(d.w/1000,d.h/700),rw=1000*scale,rh=700*scale,ox=(d.w-rw)/2,oy=(d.h-rh)/2;
+      if(cfg.background!=='transparent'){outCtx.fillStyle=this.bgColor(cfg,g)||'#ffffff';outCtx.fillRect(0,0,d.w,d.h)}
+      outCtx.drawImage(stage,ox,oy,rw,rh);
+      els.playbackVideoStatus.textContent=`Recording playback video · ${Math.round(clamp(elapsed/totalMs,0,1)*100)}%`;
+      if(elapsed<totalMs)requestAnimationFrame(frame);else rec.stop()
+    };
+    requestAnimationFrame(frame);
+    await finish;
+    state.playbackVideo.recording=false;els.exportPlaybackVideo.disabled=false;
+    if(state.playbackVideo.cancel){els.playbackVideoStatus.textContent='Playback video export canceled.';state.playbackVideo.cancel=false;return}
+    const blob=new Blob(chunks,{type:mime});download(`${safeName(state.project.name||g?.name||'gesture')}-playback.webm`,blob);els.playbackVideoStatus.textContent='Playback video exported successfully.'
+  },
+  cancel(){if(state.playbackVideo.recording){state.playbackVideo.cancel=true;els.playbackVideoStatus.textContent='Canceling…'}}
 };
 
 const CompareEngine={
@@ -1833,6 +2178,8 @@ function syncControlsFromGesture(){
   const g=selectedGesture();if(!g)return;
   els.essence.value=g.processing?.essence??20;els.geoTol.value=g.processing?.geoTol??2;els.motionAware.checked=g.processing?.motionAware!==false;
   els.baseWidth.value=g.styleParams?.baseWidth??4;els.effectStrength.value=g.styleParams?.effectStrength??65;
+  els.traceColor.value=g.styleParams?.traceColor||'#111111';els.traceOpacity.value=Math.round((g.styleParams?.traceOpacity??1)*100);els.minTraceWidth.value=g.styleParams?.minTraceWidth??.5;els.maxTraceWidth.value=g.styleParams?.maxTraceWidth??18;els.secondaryTraceColor.value=g.styleParams?.secondaryTraceColor||'#118ab2';els.secondaryTraceOpacity.value=Math.round((g.styleParams?.secondaryTraceOpacity??.55)*100);els.canvasColor.value=g.styleParams?.canvasColor||'#ffffff';
+  els.easyTraceColor.value=els.traceColor.value;els.easyTraceOpacity.value=els.traceOpacity.value;els.easyTraceWidth.value=els.baseWidth.value;
   els.reverseTime.classList.toggle('active',!!g.temporal?.reverse);
   els.normalizeSpeed.classList.toggle('active',!!g.temporal?.normalizeSpeed);
   els.reverseFlag.classList.toggle('on',!!g.temporal?.reverse);
@@ -1845,7 +2192,9 @@ function syncControlsFromGesture(){
 }
 
 function updateOutputs(){
-  els.essenceOut.textContent=`${els.essence.value}%`;els.geoOut.textContent=Number(els.geoTol.value).toFixed(1);els.widthOut.textContent=Number(els.baseWidth.value).toFixed(1);els.strengthOut.textContent=`${els.effectStrength.value}%`;
+  els.essenceOut.textContent=`${els.essence.value}%`;els.geoOut.textContent=Number(els.geoTol.value).toFixed(1);els.widthOut.textContent=`${Number(els.baseWidth.value).toFixed(1)} px`;els.strengthOut.textContent=`${els.effectStrength.value}%`;
+  if(els.traceOpacityOut)els.traceOpacityOut.textContent=`${els.traceOpacity.value}%`;if(els.minWidthOut)els.minWidthOut.textContent=`${Number(els.minTraceWidth.value).toFixed(2)} px`;if(els.maxWidthOut)els.maxWidthOut.textContent=`${Number(els.maxTraceWidth.value).toFixed(1)} px`;if(els.secondaryOpacityOut)els.secondaryOpacityOut.textContent=`${els.secondaryTraceOpacity.value}%`;
+  if(els.easyTraceOpacityOut)els.easyTraceOpacityOut.textContent=`${els.easyTraceOpacity.value}%`;if(els.easyTraceWidthOut)els.easyTraceWidthOut.textContent=`${Number(els.easyTraceWidth.value).toFixed(1)} px`;
   if(els.pauseSenseOut)els.pauseSenseOut.textContent=`${els.pauseSense.value}%`;if(els.reverseSenseOut)els.reverseSenseOut.textContent=`${els.reverseSense.value}%`;if(els.loopSenseOut)els.loopSenseOut.textContent=`${els.loopSense.value}%`;
   if(els.trimStartOut)els.trimStartOut.textContent=`${els.trimStart.value}%`;if(els.trimEndOut)els.trimEndOut.textContent=`${els.trimEnd.value}%`;if(els.timeScaleOut)els.timeScaleOut.textContent=`${(Number(els.timeScale.value)/100).toFixed(2)}×`;
   if(els.trimFlag)els.trimFlag.textContent=`TRIM ${els.trimStart.value}–${els.trimEnd.value}%`;if(els.scaleFlag)els.scaleFlag.textContent=`TIME ${(Number(els.timeScale.value)/100).toFixed(2)}×`;
@@ -1901,33 +2250,51 @@ function exportCsv(){
 }
 function svgString(g,optimized=false){
   g=previewGesture(g);const cfg=state.project.plotter||{},plotterGeom=PlotterEngine.geometry(g),basePts=optimized?Simplifier.rdp(PlotterEngine.cleanPoints(effectivePoints(g)),Math.max(+cfg.minFeature||0,1)):effectivePoints(g);
-  const pts=basePts,style=g.style||'ink',w=1000,h=700,plotter=optimized||els.plotterSafe.checked||style==='plotter';
+  const pts=basePts,style=g.style||'ink',w=1000,h=700,plotter=optimized||els.plotterSafe.checked||style==='plotter',traceColor=g.styleParams?.traceColor||'#111111',traceOpacity=clamp(g.styleParams?.traceOpacity??1,.05,1),minW=g.styleParams?.minTraceWidth??.5,maxW=g.styleParams?.maxTraceWidth??18,secondaryColor=g.styleParams?.secondaryTraceColor||traceColor,secondaryOpacity=clamp(g.styleParams?.secondaryTraceOpacity??.55,0,1),canvasColor=g.styleParams?.canvasColor||'transparent';
   let body='',pathD=StyleEngine.pathD(pts);
   if(plotter){
     let paths=plotterGeom.paths;
     if(optimized)paths=paths.map(path=>Simplifier.rdp(path,Math.max(+cfg.minFeature||0,1)));
     paths.forEach(path=>{if(path.length>1)body+=`<path d="${StyleEngine.pathD(path)}" fill="none" stroke="#111" stroke-width="${cfg.penWidth||1}" stroke-linecap="round" stroke-linejoin="round"/>`});
-  }else if(style==='raw'||style==='skeleton') body+=`<path d="${pathD}" fill="none" stroke="#111" stroke-width="${g.styleParams?.baseWidth||4}" stroke-linecap="round" stroke-linejoin="round"/>`;
-  else if(style==='ribbon') body+=`<path d="${pathD}" fill="none" stroke="#111" stroke-width="${(g.styleParams?.baseWidth||4)*2.5}" stroke-linecap="butt" stroke-linejoin="round"/>`;
+  }else if(style==='raw'||style==='skeleton') body+=`<path d="${pathD}" fill="none" stroke="${traceColor}" stroke-width="${clamp(g.styleParams?.baseWidth||4,minW,maxW)}" opacity="${traceOpacity}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  else if(style==='ribbon') body+=`<path d="${pathD}" fill="none" stroke="${traceColor}" stroke-width="${clamp((g.styleParams?.baseWidth||4)*2.5,minW,maxW)}" opacity="${traceOpacity}" stroke-linecap="butt" stroke-linejoin="round"/>`;
   else if(style==='pulse'){
-    body+=`<path d="${pathD}" fill="none" stroke="#111" stroke-width="1.2" opacity=".35"/>`;
-    let carry=0;for(let i=1;i<pts.length;i++){carry+=dist(pts[i-1],pts[i]);const mv=MappingEngine.visual(g,pts[i]);if(carry<Math.max(2,mv.spacing))continue;carry=0;body+=`<circle cx="${pts[i].x}" cy="${pts[i].y}" r="${clamp(mv.nodeSize,1,28)}" fill="none" stroke="#111"/>`}
+    body+=`<path d="${pathD}" fill="none" stroke="${traceColor}" stroke-width="${clamp(1.2,minW,maxW)}" opacity="${(.35*traceOpacity).toFixed(3)}"/>`;
+    let carry=0;for(let i=1;i<pts.length;i++){carry+=dist(pts[i-1],pts[i]);const mv=MappingEngine.visual(g,pts[i]);if(carry<Math.max(2,mv.spacing))continue;carry=0;body+=`<circle cx="${pts[i].x}" cy="${pts[i].y}" r="${clamp(mv.nodeSize,1,28)}" fill="none" stroke="${traceColor}" opacity="${traceOpacity}"/>`}
   }else if(style==='constellation'){
     const sig=[g.analysis.samples[0],...g.analysis.pauses.map(e=>g.analysis.samples[e.i]),...g.analysis.reversals.map(e=>g.analysis.samples[e.i]),...g.analysis.loops.map(e=>g.analysis.samples[e.i]),g.analysis.samples.at(-1)].filter(Boolean).sort((a,b)=>a.t-b.t);
-    body+=`<path d="${StyleEngine.pathD(sig)}" fill="none" stroke="#111" stroke-width="1.2"/>`;sig.forEach(p=>body+=`<circle cx="${p.x}" cy="${p.y}" r="${clamp(MappingEngine.visual(g,p).nodeSize,2,28)}" fill="none" stroke="#111"/>`)
+    body+=`<path d="${StyleEngine.pathD(sig)}" fill="none" stroke="${traceColor}" stroke-width="${clamp(1.2,minW,maxW)}" opacity="${traceOpacity}"/>`;sig.forEach(p=>body+=`<circle cx="${p.x}" cy="${p.y}" r="${clamp(MappingEngine.visual(g,p).nodeSize,2,28)}" fill="none" stroke="${traceColor}" opacity="${traceOpacity}"/>`)
   }else if(style==='seismic'){
-    const amp=(g.styleParams?.seismicScale||18)*(g.styleParams?.effectStrength||65)/100,displaced=pts.map((p,i)=>{const prev=pts[Math.max(0,i-1)],next=pts[Math.min(pts.length-1,i+1)],a=Math.atan2(next.y-prev.y,next.x-prev.x)+Math.PI/2,mv=MappingEngine.visual(g,p),j=clamp(Math.abs(p.jerk)/(g.analysis.peakJerk||1),0,1),d=amp*(j*.35+mv.displacement);return {...p,x:p.x+Math.cos(a)*d*Math.sin(i*1.77),y:p.y+Math.sin(a)*d*Math.sin(i*1.77)}});body+=`<path d="${StyleEngine.pathD(displaced)}" fill="none" stroke="#111" stroke-width="${g.styleParams?.baseWidth||2}"/>`;
+    const amp=(g.styleParams?.seismicScale||18)*(g.styleParams?.effectStrength||65)/100,displaced=pts.map((p,i)=>{const prev=pts[Math.max(0,i-1)],next=pts[Math.min(pts.length-1,i+1)],a=Math.atan2(next.y-prev.y,next.x-prev.x)+Math.PI/2,mv=MappingEngine.visual(g,p),j=clamp(Math.abs(p.jerk)/(g.analysis.peakJerk||1),0,1),d=amp*(j*.35+mv.displacement);return {...p,x:p.x+Math.cos(a)*d*Math.sin(i*1.77),y:p.y+Math.sin(a)*d*Math.sin(i*1.77)}});body+=`<path d="${StyleEngine.pathD(displaced)}" fill="none" stroke="${traceColor}" stroke-width="${clamp(g.styleParams?.baseWidth||2,minW,maxW)}" opacity="${traceOpacity}"/>`;
   }else if(style==='echo'){
-    const count=clamp(g.styleParams?.echoCount||4,2,10),off=g.styleParams?.echoOffset||9;for(let e=count-1;e>=0;e--){const shifted=pts.map(p=>({...p,x:p.x+e*off,y:p.y+e*off*.55}));body+=`<path d="${StyleEngine.pathD(shifted)}" fill="none" stroke="#111" stroke-width="${g.styleParams?.baseWidth||2}" opacity="${clamp((1-e/count)*.75+.08,.08,.9)}"/>`}
+    const count=clamp(g.styleParams?.echoCount||4,2,10),off=g.styleParams?.echoOffset||9;for(let e=count-1;e>=0;e--){const shifted=pts.map(p=>({...p,x:p.x+e*off,y:p.y+e*off*.55}));body+=`<path d="${StyleEngine.pathD(shifted)}" fill="none" stroke="${e===0?traceColor:secondaryColor}" stroke-width="${clamp(g.styleParams?.baseWidth||2,minW,maxW)}" opacity="${e===0?traceOpacity:clamp(((1-e/count)*.75+.08)*secondaryOpacity,0,1)}"/>`}
   }else{
-    for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],mv=MappingEngine.visual(g,b),sw=(g.styleParams?.baseWidth||4)*mv.strokeWidth;body+=`<path d="M ${a.x} ${a.y} L ${b.x} ${b.y}" fill="none" stroke="#111" stroke-width="${sw.toFixed(2)}" opacity="${clamp(mv.opacity,.05,1).toFixed(2)}" stroke-linecap="round"/>`}
+    for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],mv=MappingEngine.visual(g,b),sw=clamp((g.styleParams?.baseWidth||4)*mv.strokeWidth,minW,maxW);body+=`<path d="M ${a.x} ${a.y} L ${b.x} ${b.y}" fill="none" stroke="${traceColor}" stroke-width="${sw.toFixed(2)}" opacity="${clamp(mv.opacity*traceOpacity,.02,1).toFixed(2)}" stroke-linecap="round"/>`}
   }
   if(plotter)g.analysis.pauses.forEach(e=>{const p=g.analysis.samples[e.i],r=clamp(MappingEngine.visual(g,p).nodeSize+Math.min(10,e.duration/60),3,20);body+=`<circle cx="${p.x}" cy="${p.y}" r="${r.toFixed(2)}" fill="none" stroke="#111" stroke-width="${cfg.penWidth||1}"/>`});
   const payload={application:'GESTURE',version:APP_VERSION,name:g.name,source:g.inputSource,duration:g.analysis.duration,recipe:g.recipeId,simplification:g.processing,temporal:g.temporal,analysisConfig:g.analysisConfig,style:g.style,styleParams:g.styleParams,mappings:g.mappings,spatial:g.spatial,crossMap:state.project.crossMap,composition:state.project.composition,captureConfig:state.project.captureConfig,rawSamples:g.rawSamples};
   const meta=els.includeMetadata.checked?`<metadata id="gesture-metadata">${xmlEscape(JSON.stringify(payload))}</metadata>`:'';
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="${SVG_NS}" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${meta}<g>${body}</g></svg>`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="${SVG_NS}" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${meta}${canvasColor&&canvasColor!=='transparent'?`<rect width="100%" height="100%" fill="${canvasColor}"/>`:''}<g>${body}</g></svg>`;
 }
-function exportSvg(){const g=CrossMapEngine.current()||selectedGesture(),scene=state.project.layersEnabled||state.project.composition?.enabled;if(!g&&!scene)return;if(!ReleaseReadiness.preflight())return;download(`${safeName(scene?state.project.name:g.name)}.svg`,new Blob([scene?SceneEngine.svg(false):svgString(g,false)],{type:'image/svg+xml'}));setWorkflow('export')}
+function exportSvg(){
+  try{
+    const scene=state.project.layersEnabled||state.project.composition?.enabled,cross=CrossMapEngine.current(),g=cross||selectedGesture();
+    if(!g&&!scene){els.preflightStatus.textContent='Export blocked: no gesture or scene is active.';els.preflightStatus.classList.add('warn');return}
+    const result=ExportPreflight?.run?.('svg')||{ok:true,warnings:[]};
+    if(result && result.ok===false){els.preflightStatus.textContent='Export blocked: '+(result.errors||result.warnings||[]).join(' · ');els.preflightStatus.classList.add('warn');return}
+    const svg=scene?SceneEngine.svg(false):svgString(g,false);
+    if(!svg||!svg.includes('<svg'))throw Error('SVG renderer returned no document');
+    const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
+    download(`${safeName(state.project.name||g?.name||'gesture')}.svg`,blob);
+    els.preflightStatus.textContent='SVG exported successfully.';
+    els.preflightStatus.classList.remove('warn');
+    setWorkflow('export')
+  }catch(e){
+    console.error('SVG export failed',e);
+    els.preflightStatus.textContent='SVG export failed: '+e.message;
+    els.preflightStatus.classList.add('warn')
+  }
+}
 function exportOptimizedSvg(){const g=CrossMapEngine.current()||selectedGesture(),scene=state.project.layersEnabled||state.project.composition?.enabled;if(!g&&!scene)return;if(!ReleaseReadiness.preflight())return;download(`${safeName(scene?state.project.name:g.name)}-optimized.svg`,new Blob([scene?SceneEngine.svg(false):svgString(g,true)],{type:'image/svg+xml'}));setWorkflow('export')}
 function exportFabricationSvg(){const g=CrossMapEngine.current()||selectedGesture();if(!g&&!state.project.layersEnabled&&!state.project.composition?.enabled)return;if(!ReleaseReadiness.preflight())return;download(`${safeName(state.project.name)}-fabrication.svg`,new Blob([FabricationEngine.trueScaleSvg()],{type:'image/svg+xml'}));setWorkflow('export')}
 function exportHpgl(){if(!selectedGesture()&&!state.project.layersEnabled&&!state.project.composition?.enabled)return;if(!ReleaseReadiness.preflight())return;download(`${safeName(state.project.name)}.hpgl`,new Blob([FabricationEngine.hpgl()],{type:'application/vnd.hp-hpgl'}));setWorkflow('export')}
@@ -2032,7 +2399,7 @@ function clearCurrentGestureState(){
   state.live.enabled=false;state.live.samples=[];state.live.fullSamples=[];state.live.frozen=false;if(state.live.performance)LiveEngine.performance(false);
   state.project.compare.enabled=false;state.project.crossMap.enabled=false;state.project.layersEnabled=false;state.project.composition.enabled=false;state.selectedLayerId=null;state.layerDrag=null;
   const g=selectedGesture();if(g){g.temporal={reverse:false,normalizeSpeed:false,trimStartPct:0,trimEndPct:100,timeScale:1,removedRanges:[]};g.spatial={x:0,y:0,rotate:0,scale:1,motionScale:1,mirrorX:false,mirrorY:false,normalize:'none'}}
-  state.project.selectedGestureId=null;setStateLabel('READY');Store.markDirty();renderAll();MobileUI?.open?.('canvas')
+  state.project.selectedGestureId=null;setStateLabel(state.capture.sourceMode==='camera'&&state.camera.stream?'CAMERA READY':'READY');Store.markDirty();renderAll();MobileUI?.open?.('canvas')
 }
 function clearAndStartFreshGesture(){
   const g=selectedGesture(),hasWork=!!(g||state.capture.current.length||state.live.samples.length||state.project.layers.length||state.project.compare.enabled||state.project.crossMap.enabled||state.project.composition.enabled);
@@ -2064,7 +2431,7 @@ const MobileUI={
   closePanels(){document.body.classList.remove('mobile-panel-open');document.querySelectorAll('[data-mobile-section]').forEach(s=>s.classList.remove('mobile-active'))},
   syncRecord(){
     if(!els.mobileRecordBtn)return;const active=state.capture.armed||state.capture.recording||state.sensor.recording;
-    els.mobileRecordBtn.textContent=state.capture.recording||state.sensor.recording?'RECORDING':state.capture.armed?'ARMED — MOVE':'RECORD';els.mobileRecordBtn.classList.toggle('recording',active)
+    els.mobileRecordBtn.textContent=state.capture.recording&&state.capture.sourceMode==='camera'?'STOP & SAVE':state.capture.recording||state.sensor.recording?'RECORDING':state.capture.armed&&state.capture.sourceMode==='camera'?'STARTING…':state.capture.armed?'ARMED — MOVE':'RECORD';els.mobileRecordBtn.classList.toggle('recording',active)
   }
 };
 
@@ -2073,11 +2440,28 @@ function bind(){
   els.recordBtn.onclick=()=>CaptureEngine.arm();els.clearGestureBtn.onclick=clearAndStartFreshGesture;
   document.querySelectorAll('[data-source]').forEach(b=>b.onclick=()=>SourceManager.set(b.dataset.source));
   els.importMotionBtn.onclick=()=>els.motionDataFile.click();els.motionDataFile.onchange=async()=>{const f=els.motionDataFile.files[0];if(!f)return;try{await ImportEngine.file(f)}catch(e){alert('Could not import motion data: '+e.message)}els.motionDataFile.value=''};
-  els.requestSensor.onclick=()=>SensorEngine.enable();els.startCamera.onclick=()=>CameraEngine.start();els.stopCamera.onclick=()=>CameraEngine.stop();els.sampleCameraColor.onclick=()=>CameraEngine.sampleColor();els.cameraTracker.onchange=()=>{state.camera.prevFrame=null;els.signalReadout.textContent='Camera tracker: '+els.cameraTracker.options[els.cameraTracker.selectedIndex].text};
+  els.requestSensor.onclick=()=>SensorEngine.enable();els.startCamera.onclick=()=>CameraEngine.start();els.stopCamera.onclick=()=>CameraEngine.stop();els.sampleCameraColor.onclick=()=>CameraEngine.sampleColor();els.lockCameraTarget.onclick=()=>CameraEngine.toggleLock();els.minimizeCamera.onclick=()=>CameraEngine.minimize();els.restoreCamera.onclick=()=>CameraEngine.restore();els.webcamOverlay.onclick=e=>{const r=els.webcamOverlay.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*els.webcamOverlay.width,y=(e.clientY-r.top)/r.height*els.webcamOverlay.height;CameraEngine.sampleAt(x,y)};els.cameraTracker.onchange=()=>{state.camera.prevFrame=null;if(els.cameraTracker.value!=='color'){state.camera.targetLocked=false;els.lockCameraTarget.classList.remove('active');els.lockCameraTarget.textContent='LOCK TARGET'}CameraEngine.updateTargetStatus();els.signalReadout.textContent='Camera tracker: '+els.cameraTracker.options[els.cameraTracker.selectedIndex].text};
   els.liveBtn.onclick=()=>LiveEngine.toggle();els.liveToggle.onclick=()=>LiveEngine.toggle();els.saveLiveTake.onclick=()=>LiveEngine.saveWindow();els.savePerformance.onclick=()=>LiveEngine.savePerformance();els.clearLive.onclick=()=>LiveEngine.clear();els.freezeLive.onclick=()=>LiveEngine.freeze();els.performanceMode.onclick=()=>LiveEngine.performance();els.liveFadeToggle.onclick=()=>LiveEngine.setFade();els.livePrevRecipe.onclick=()=>LiveEngine.stepRecipe(-1);els.liveNextRecipe.onclick=()=>LiveEngine.stepRecipe(1);els.liveRecipe.onchange=()=>LiveEngine.setRecipeById(els.liveRecipe.value);els.liveWindow.oninput=()=>{state.live.windowMs=Number(els.liveWindow.value)*1000;els.liveWindowOut.textContent=`${els.liveWindow.value} s`};els.liveFade.oninput=()=>{state.live.fadeMs=Number(els.liveFade.value)*1000;els.liveFadeOut.textContent=`${els.liveFade.value} s`};
 
   ['pointerdown','pointermove','pointerup','pointercancel'].forEach(ev=>els.gestureSvg.addEventListener(ev,e=>ev==='pointerdown'?CaptureEngine.pointerDown(e):ev==='pointermove'?CaptureEngine.pointerMove(e):CaptureEngine.pointerUp(e),{passive:false}));
   document.querySelectorAll('[data-style]').forEach(b=>b.onclick=()=>setStyle(b.dataset.style));
+  const applyTraceAppearance=(source='advanced')=>{
+    const g=selectedGesture();if(!g)return;
+    if(source==='easy'){
+      g.styleParams.traceColor=els.easyTraceColor.value;g.styleParams.traceOpacity=Number(els.easyTraceOpacity.value)/100;g.styleParams.baseWidth=Number(els.easyTraceWidth.value);
+      els.traceColor.value=els.easyTraceColor.value;els.traceOpacity.value=els.easyTraceOpacity.value;els.baseWidth.value=els.easyTraceWidth.value;
+    }else{
+      Object.assign(g.styleParams,{traceColor:els.traceColor.value,traceOpacity:Number(els.traceOpacity.value)/100,baseWidth:Number(els.baseWidth.value),minTraceWidth:Number(els.minTraceWidth.value),maxTraceWidth:Number(els.maxTraceWidth.value),secondaryTraceColor:els.secondaryTraceColor.value,secondaryTraceOpacity:Number(els.secondaryTraceOpacity.value)/100,canvasColor:els.canvasColor.value});
+      if(g.styleParams.minTraceWidth>g.styleParams.maxTraceWidth){g.styleParams.maxTraceWidth=g.styleParams.minTraceWidth;els.maxTraceWidth.value=g.styleParams.maxTraceWidth}
+      g.styleParams.baseWidth=clamp(g.styleParams.baseWidth,g.styleParams.minTraceWidth,g.styleParams.maxTraceWidth);els.baseWidth.value=g.styleParams.baseWidth;
+      els.easyTraceColor.value=g.styleParams.traceColor;els.easyTraceOpacity.value=Math.round(g.styleParams.traceOpacity*100);els.easyTraceWidth.value=g.styleParams.baseWidth;
+    }
+    Store.markDirty();updateOutputs();renderGesture()
+  };
+  [els.traceColor,els.traceOpacity,els.baseWidth,els.minTraceWidth,els.maxTraceWidth,els.secondaryTraceColor,els.secondaryTraceOpacity,els.canvasColor].forEach(x=>x.oninput=()=>applyTraceAppearance('advanced'));els.baseWidth.oninput=()=>{applyTraceAppearance('advanced');els.widthOut.textContent=`${Number(els.baseWidth.value).toFixed(1)} px`};
+  [els.easyTraceColor,els.easyTraceOpacity,els.easyTraceWidth].forEach(x=>x.oninput=()=>applyTraceAppearance('easy'));els.easyTraceWidth.oninput=()=>{applyTraceAppearance('easy');els.easyTraceWidthOut.textContent=`${Number(els.easyTraceWidth.value).toFixed(1)} px`};
+  document.querySelectorAll('[data-trace-color]').forEach(b=>b.onclick=()=>{const g=selectedGesture();if(!g)return;g.styleParams.traceColor=b.dataset.traceColor;els.traceColor.value=b.dataset.traceColor;els.easyTraceColor.value=b.dataset.traceColor;Store.markDirty();renderGesture()});
+
   els.autoInterpret.onclick=autoInterpret;els.easyExport.onclick=exportSvg;els.exportSvg.onclick=exportSvg;els.exportOptimizedSvg.onclick=exportOptimizedSvg;els.exportFabricationSvg.onclick=exportFabricationSvg;els.exportDxf.onclick=exportDxf;els.exportHpgl.onclick=exportHpgl;els.exportPng.onclick=exportPng;els.exportJson.onclick=exportMotionJson;els.exportCsv.onclick=exportCsv;els.motionPortrait.onclick=openMotionPortrait;els.closePortrait.onclick=()=>els.portraitModal.classList.add('hidden');els.printPortrait.onclick=()=>window.print();els.importGestureSvgBtn.onclick=()=>els.gestureSvgFile.click();els.gestureSvgFile.onchange=async()=>{const f=els.gestureSvgFile.files[0];if(!f)return;try{await importGestureSvg(f)}catch(e){alert('Could not import GESTURE SVG: '+e.message)}els.gestureSvgFile.value=''};
   els.playBtn.onclick=()=>PlaybackEngine.playPause();els.prevEvent.onclick=()=>PlaybackEngine.event(-1);els.nextEvent.onclick=()=>PlaybackEngine.event(1);
   els.speedSelect.onchange=()=>state.playback.speed=Number(els.speedSelect.value);els.playMode.onchange=()=>{state.playback.mode=els.playMode.value;renderGesture()};els.timelineZoom.onchange=()=>{state.timelineZoom=Number(els.timelineZoom.value);Timeline.render()};document.querySelectorAll('.channelToggle').forEach(x=>x.onchange=()=>{x.checked?state.timelineChannels.add(x.value):state.timelineChannels.delete(x.value);Timeline.render()});
@@ -2146,7 +2530,7 @@ function bind(){
 
   const applyAnimation=()=>{Object.assign(state.project.animation,{duration:Math.max(.5,Number(els.animationDuration.value)||5),fps:Number(els.animationFps.value)||30,mode:els.animationMode.value,repeats:clamp(Number(els.animationRepeats.value)||1,1,20),pingPong:els.animationPingPong.value==='true'});Store.markDirty()};
   [els.animationDuration,els.animationFps,els.animationMode,els.animationRepeats,els.animationPingPong].forEach(x=>x.onchange=applyAnimation);
-  els.previewAnimation.onclick=()=>{applyAnimation();AnimationEngine.preview()};els.stopAnimationPreview.onclick=()=>AnimationEngine.stop();els.exportAnimatedSvg.onclick=()=>{applyAnimation();AnimationEngine.animatedSvg()};els.exportWebM.onclick=()=>{applyAnimation();AnimationEngine.webm()};
+  els.previewAnimation.onclick=()=>{applyAnimation();AnimationEngine.preview()};els.stopAnimationPreview.onclick=()=>AnimationEngine.stop();els.exportAnimatedSvg.onclick=()=>{applyAnimation();AnimationEngine.animatedSvg()};els.exportWebM.onclick=()=>{applyAnimation();AnimationEngine.webm()};els.exportPlaybackVideo.onclick=()=>PlaybackVideoEngine.export();els.cancelPlaybackVideo.onclick=()=>PlaybackVideoEngine.cancel();
 
   document.querySelectorAll('[data-preview]').forEach(b=>b.onclick=()=>{state.previewMode=b.dataset.preview;document.querySelectorAll('[data-preview]').forEach(x=>x.classList.toggle('active',x===b));renderGesture()});
   els.compareEnabled.onchange=()=>{state.project.compare.enabled=els.compareEnabled.checked;Store.markDirty();renderAll()};els.compareA.onchange=()=>{state.project.compare.a=els.compareA.value;Store.markDirty();renderCompare();renderGesture()};els.compareB.onchange=()=>{state.project.compare.b=els.compareB.value;Store.markDirty();renderCompare();renderGesture()};
@@ -2240,7 +2624,7 @@ syncProjectMode();
 renderGrid();
 syncControlsFromGesture();
 renderAll();
-requestAnimationFrame(()=>{Timeline.resize();ReleaseReadiness.render();ReleaseReadiness.selfTest()});
+requestAnimationFrame(()=>{Timeline.resize();ReleaseReadiness.render();ReleaseReadiness.selfTest()});setInterval(()=>LiveEngine.watchdog(),1000);
 })();
 </script>
 </body>
