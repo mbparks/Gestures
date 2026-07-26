@@ -1,4 +1,4 @@
-# GESTURE v4.2 — Stable Release
+# GESTURE v4.4 — Stable Release
 
 GESTURE is a browser-native motion-to-mark Field Instrument. It records not only where movement goes, but how it happens: speed, hesitation, acceleration, jerk, repetition, rhythm, pressure, direction, curvature, and supported physical motion signals.
 
@@ -72,3 +72,43 @@ v4.2 adds a first-class **CLEAR / NEW GESTURE** action.
 - Clears the active canvas/capture state, LIVE buffer, playback, Compare, CROSS MAP, Layers, and Composition state.
 - Existing project library gestures remain intact.
 - If active work exists, GESTURE confirms before clearing.
+
+
+## Camera capture fix — v4.3
+
+v4.3 fixes a camera state-machine bug in v4.2.
+
+Selecting **Camera** starts the preview. Previously, pressing **RECORD** then called the camera start routine again. If the preview stream already existed, that routine returned no success value, so the recorder interpreted a ready camera as a failed start and never armed.
+
+Camera behavior is now explicit:
+
+1. Select **Camera** → preview starts and reports **CAMERA READY**.
+2. Press **RECORD** → tracked camera samples begin recording.
+3. The button becomes **STOP & SAVE**.
+4. Press it again → the camera gesture is committed to the library.
+5. **Stop Camera** cancels any active camera capture and releases the camera stream.
+
+If browser support or permission fails, the button returns to **RECORD** and the camera error is shown in the signal/status readout.
+
+
+## Trace Appearance — v4.4
+
+v4.4 promotes visual trace controls into first-class settings.
+
+### Easy Mode
+- Trace color
+- Trace opacity
+- Trace thickness
+- One-tap color swatches
+
+### Advanced Mode
+- Primary trace color
+- Global trace opacity
+- Base thickness
+- Minimum thickness
+- Maximum thickness
+- Secondary trace color
+- Secondary trace opacity
+- Canvas/background color
+
+Appearance settings are stored per gesture. Width mappings remain active, but generated widths are clamped between the configured minimum and maximum thickness. Echo trails use the secondary color and secondary opacity. Scene/layer rendering, animation preview, SVG, PNG, and animated scene SVGs now preserve the configured primary trace color and opacity more consistently.
