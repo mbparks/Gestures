@@ -1,4 +1,4 @@
-# GESTURE v5.5 — Stable Release
+# GESTURE v6.2 — Stable Release
 
 GESTURE is a browser-native motion-to-mark Field Instrument. It records not only where movement goes, but how it happens: speed, hesitation, acceleration, jerk, repetition, rhythm, pressure, direction, curvature, and supported physical motion signals.
 
@@ -262,3 +262,93 @@ The left and right tool columns were restructured around stable roles:
 - **RESET VIEW** returns the instrument to Easy Mode, Capture stage, scroll-top, and a known-good layout.
 - Advanced Focus no longer hides controls. It is now informational/stateful only.
 - Tool headers remain sticky so recovery actions are always reachable while scrolling.
+
+
+## LIVE DRAW workflow fix — v5.6
+
+LIVE DRAW is now a self-contained action instead of depending on the current tool-shell state.
+
+- The LIVE section is never hidden by workflow filtering.
+- START LIVE DRAW forces the LIVE tool stage visible.
+- The button shows STARTING, then STOP LIVE DRAW when active.
+- A visible toast confirms LIVE activation or explains failure.
+- The canvas receives a LIVE outline and LIVE/source badges.
+- Pointer LIVE samples are captured before layer-drag handling, so layers cannot swallow LIVE pointer events.
+- If Import Motion is selected, LIVE automatically falls back to Pointer instead of silently refusing to start.
+- The watchdog now explicitly instructs the user to move across the canvas when no pointer samples arrive.
+
+
+## Camera LIVE readiness — v5.7
+
+LIVE DRAW no longer requires an explicitly locked Color Target if the camera tracker is already producing a valid tracked point.
+
+Camera LIVE is accepted when:
+- the target is locked, or
+- a color target has already been selected, or
+- the camera tracker is actively producing a point with usable confidence.
+
+Lock Target remains available to improve stability, but it is no longer a hard prerequisite for LIVE DRAW.
+
+If the camera is running but no tracked point exists yet, LIVE reports that specific condition instead of incorrectly saying the camera target is not ready.
+
+
+## Easy Workflow redesign — v6.0
+
+Easy Mode is now a separate minimal interface rather than a filtered version of Advanced.
+
+### Easy Mode
+Three stages only:
+
+1. **CAPTURE**
+   - Pointer
+   - Camera
+   - Import Motion
+   - Record
+   - Clear / New
+
+2. **EDIT**
+   - Ink / Raw / Ribbon / Plotter
+   - Trace color
+   - Opacity
+   - Thickness
+   - Play
+   - Auto Style
+
+3. **EXPORT**
+   - SVG
+   - PNG
+   - Playback Video
+
+In Easy Mode:
+- the right inspector is hidden
+- the timeline/analysis panel is hidden
+- the five-step advanced workflow bar is hidden
+- project/library/composition/mapping/fabrication/system controls are hidden
+- the canvas occupies the rest of the application
+
+### Advanced Mode
+The complete GESTURE instrument remains available unchanged for users who need Motion Character analysis, Cross Map, mappings, temporal editing, composition, fabrication, diagnostics, project management, and advanced export settings.
+
+
+## Easy / Advanced mode switch fix — v6.1
+
+v6.0 introduced a dedicated Easy Mode layout, but the mode controller only toggled the `advanced` body class. The new Easy UI CSS expected an explicit `easy` body class, so clicking EASY changed button state without activating the Easy layout.
+
+v6.1 makes modes explicit and mutually exclusive:
+
+- Easy sets `body.easy` and removes `body.advanced`.
+- Advanced sets `body.advanced` and removes `body.easy`.
+- Switching to Easy clears advanced tool filters and restores the 3-stage Capture → Edit → Export interface.
+- Switching to Advanced restores all workflow/inspector tools and clears stale mobile panel state.
+- Both modes show immediate confirmation feedback.
+
+
+## Easy Mode full-height shell — v6.2
+
+On desktop, the Easy Mode workspace now fills the viewport below the top bar.
+
+- The left Easy menu stretches the full available vertical height.
+- The left menu scrolls internally when its content exceeds the viewport.
+- The canvas stretches to the same height beside the menu.
+- The page itself does not develop a second outer scrollbar in Easy Mode.
+- Mobile keeps the compact bottom-panel layout.
