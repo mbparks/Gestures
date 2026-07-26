@@ -1,4 +1,4 @@
-# GESTURE v4.9 — Stable Release
+# GESTURE v5.0 — Stable Release
 
 GESTURE is a browser-native motion-to-mark Field Instrument. It records not only where movement goes, but how it happens: speed, hesitation, acceleration, jerk, repetition, rhythm, pressure, direction, curvature, and supported physical motion signals.
 
@@ -193,3 +193,16 @@ Options include:
 The output format is WebM using the browser-native `canvas.captureStream()` and `MediaRecorder` path. Browser support varies; GESTURE reports when the current browser cannot record WebM.
 
 This is separate from **Scene WebM**, which exports the generated scene animation.
+
+
+## Control / button fix — v5.0
+
+v5.0 fixes a mobile bottom-sheet routing defect that could make controls appear completely unresponsive.
+
+- Capture / Style / Library / More now open only the left mobile tool sheet.
+- Insights / Advanced open only the right mobile sheet.
+- ADV opens Advanced directly.
+- More is reserved for LIVE and Project controls.
+- LIVE status remains visible on mobile.
+- SAVE WINDOW and SAVE PERFORMANCE now report when too few live samples exist.
+- SVG export now has a visible status target and fallback reporter.
