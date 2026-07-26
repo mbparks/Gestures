@@ -1,4 +1,4 @@
-# GESTURE v6.3 — Stable Release
+# GESTURE v6.4 — Stable Release
 
 GESTURE is a browser-native motion-to-mark Field Instrument. It records not only where movement goes, but how it happens: speed, hesitation, acceleration, jerk, repetition, rhythm, pressure, direction, curvature, and supported physical motion signals.
 
@@ -365,3 +365,24 @@ On phones, Easy Mode controls are now a collapsible bottom sheet.
 - RECORD automatically collapses the sheet so the canvas remains visible while drawing.
 - Expanded controls use at most about 48% of the viewport instead of permanently occupying the lower half.
 - Desktop Easy Mode keeps the full-height left menu.
+
+
+## Easy shell + control audit — v6.4
+
+Two root causes were fixed.
+
+### Full-height desktop Easy panel
+The main application grid always had three rows: workspace, timeline, and workflow. Easy Mode hid the timeline and workflow contents but did not remove those grid rows. The sidebar therefore occupied only the first row.
+
+Easy Mode now explicitly uses a one-row grid:
+- left Easy rail occupies row 1 / column 1
+- canvas occupies row 1 / column 2
+- both stretch to the full viewport height below the 50 px top bar
+
+Mobile also uses a one-row canvas grid while the Easy controls float as the collapsible bottom sheet.
+
+### Broken Easy controls
+- Pointer / Camera / Import now call the real `SourceManager.set()` API.
+- Play now calls the real `PlaybackEngine.playPause()` API.
+- Edit and export controls disable until a gesture exists.
+- Record, Clear, Auto Style, Play, and exports now provide explicit feedback/status.
