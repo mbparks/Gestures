@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>GESTURE v5.5 — Motion Instrument</title>
+<title>GESTURE v6.3 — Motion Instrument</title>
 <style>
 :root{
   --bg:#0c0f12; --panel:#11161b; --panel2:#171d23; --line:#2b343d; --text:#eef3f7; --muted:#95a3af;
@@ -148,6 +148,10 @@ details .content{padding:0 10px 10px}
 .camera-stage.minimized #restoreCamera{display:inline-block!important}
 
 .live-on{background:var(--danger)!important;border-color:var(--danger)!important;color:#fff!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--danger) 18%,transparent)}
+body.live-draw-active .canvas-wrap{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--danger) 75%,transparent)}
+body.live-draw-active #sourceBadge{display:inline-flex!important}
+body.live-draw-active #sceneBadge{display:inline-flex!important}
+
 .live-panel{border:1px solid color-mix(in srgb,var(--danger) 35%,var(--line));background:color-mix(in srgb,var(--danger) 5%,var(--panel2));padding:7px;border-radius:6px}
 .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.compare-grid select{min-width:0;width:100%}
 .compare-table{display:grid;grid-template-columns:1.25fr .8fr .8fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:8px}.compare-table>*{background:var(--panel2);padding:5px 6px;font:10px ui-monospace}.compare-table .head{color:var(--muted);font-weight:700}
@@ -331,15 +335,153 @@ body.tool-show-all .sidebar,body.tool-show-all .rightbar{overflow:auto!important
   .sidebar{grid-row:1;display:grid;grid-template-columns:1fr 1fr}.canvas-wrap{grid-row:2}.rightbar{grid-row:3;display:block}.timeline-panel{grid-row:4}.workflow{grid-row:5}
   .brand{font-size:14px}
 }
+
+/* v6 Easy Mode: capture → edit → export */
+.easy-workflow{display:none;padding:10px;gap:10px}
+.easy-stage-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:9px}
+.easy-stage-tabs button{padding:8px 4px;font:9px ui-monospace}
+.easy-stage-tabs button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.easy-stage{display:none;gap:9px}.easy-stage.active{display:grid}
+.easy-title{font:700 11px ui-monospace;letter-spacing:.14em;color:var(--text)}
+.easy-source-row,.easy-style-row,.easy-play-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.easy-style-row{grid-template-columns:repeat(2,1fr)}
+.easy-play-row{grid-template-columns:1fr 1fr}
+.easy-source-row button.active,.easy-style-row button.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--panel))}
+.easy-hero{min-height:44px;font-weight:700}
+.easy-status{padding:7px 8px;border:1px solid var(--line);border-radius:6px;font:9px ui-monospace;color:var(--muted);line-height:1.4}
+.easy-simple-palette{margin-top:0}
+body.easy .easy-workflow{display:grid}
+body.easy .advanced-shell-only{display:none!important}
+body.easy .rightbar{display:none!important}
+body.easy .timeline-panel{display:none!important}
+body.easy .workflow{display:none!important}
+body.easy .tool-shell-head{display:none!important}
+body.easy .sidebar{display:block!important;width:300px!important;min-width:300px!important;overflow:auto!important}
+body.easy .canvas-wrap{grid-column:auto!important}
+body.easy .app-shell,body.easy .app{grid-template-columns:300px minmax(0,1fr)!important}
+body.easy .advanced-only{display:none!important}
+body.easy .easy-only:not(.easy-workflow){display:none!important}
+body.easy .mobile-nav{display:none!important}
+body.easy .mobile-record-dock{display:none!important}
+@media(max-width:680px){
+  body.easy .sidebar{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;min-width:0!important;max-height:44vh!important;z-index:40!important;border-top:1px solid var(--line)}
+  body.easy .app-shell,body.easy .app{grid-template-columns:1fr!important}
+  body.easy .canvas-wrap{padding-bottom:44vh}
+  .easy-stage-tabs{position:sticky;top:0;background:var(--panel);z-index:2}
+}
+
+body.easy #easyBtn,body.advanced #advBtn{background:var(--accent);border-color:var(--accent);color:#fff}
+body.easy #advBtn,body.advanced #easyBtn{background:var(--panel2);color:var(--muted)}
+body.easy .topbar .badge{color:var(--accent)}
+
+
+/* v6.2 Easy desktop shell: full-height left menu */
+@media(min-width:681px){
+  body.easy{overflow:hidden}
+  body.easy .app{
+    height:calc(100vh - 44px)!important;
+    min-height:0!important;
+    grid-template-columns:300px minmax(0,1fr)!important;
+    align-items:stretch!important;
+    overflow:hidden!important
+  }
+  body.easy .sidebar{
+    position:relative!important;
+    top:auto!important;bottom:auto!important;left:auto!important;right:auto!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    width:300px!important;
+    min-width:300px!important;
+    align-self:stretch!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    border-right:1px solid var(--line)!important
+  }
+  body.easy #easyWorkflow{
+    min-height:100%!important;
+    box-sizing:border-box!important;
+    align-content:start!important
+  }
+  body.easy .canvas-wrap{
+    height:100%!important;
+    min-height:0!important;
+    align-self:stretch!important;
+    overflow:hidden!important
+  }
+  body.easy #gestureSvg{
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important
+  }
+}
+
+
+.easy-mobile-bar{display:none}
+@media(max-width:680px){
+  body.easy .sidebar{
+    max-height:none!important;
+    height:auto!important;
+    border-top:1px solid var(--line)!important;
+    border-radius:16px 16px 0 0;
+    overflow:hidden!important;
+    box-shadow:0 -10px 28px rgba(0,0,0,.28)
+  }
+  body.easy #easyWorkflow{
+    display:block!important;
+    min-height:0!important;
+    padding:0!important;
+    background:var(--panel)
+  }
+  .easy-mobile-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    min-height:58px;
+    padding:8px 12px;
+    background:var(--panel);
+    border-bottom:1px solid var(--line)
+  }
+  .easy-mobile-summary{display:grid;gap:2px;min-width:0}
+  .easy-mobile-summary b{font:700 10px ui-monospace;letter-spacing:.12em}
+  .easy-mobile-summary span{font:9px ui-monospace;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:54vw}
+  #easyMobileToggle{min-width:86px;font-size:9px;padding:7px 9px}
+  .easy-sheet-body{
+    max-height:calc(48vh - 58px);
+    overflow-y:auto;
+    padding:10px 12px 14px;
+    transition:max-height .2s ease,padding .2s ease,opacity .15s ease
+  }
+  body.easy.easy-sheet-collapsed .easy-sheet-body{
+    max-height:0!important;
+    overflow:hidden!important;
+    padding-top:0!important;
+    padding-bottom:0!important;
+    opacity:0
+  }
+  body.easy.easy-sheet-collapsed .sidebar{
+    height:58px!important;
+    min-height:58px!important
+  }
+  body.easy .canvas-wrap{
+    padding-bottom:58px!important;
+    transition:padding-bottom .2s ease
+  }
+  body.easy:not(.easy-sheet-collapsed) .canvas-wrap{
+    padding-bottom:48vh!important
+  }
+}
+
 </style>
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">GESTURE</div><div class="version">v5.5</div>
-  <div class="project-name" id="projectTitle">Untitled Project</div><span class="badge">WORKFLOW SHELL</span><button id="undoBtn" title="Undo processed/project change">↶</button><button id="redoBtn" title="Redo processed/project change">↷</button>
+  <div class="brand">GESTURE</div><div class="version">v6.3</div>
+  <div class="project-name" id="projectTitle">Untitled Project</div><span class="badge">MOBILE EASY SHEET</span><button id="undoBtn" title="Undo processed/project change">↶</button><button id="redoBtn" title="Redo processed/project change">↷</button>
   <div class="spacer"></div>
   <div class="save" id="saveStatus"><span class="save-dot"></span><span>Saved</span></div>
-  <button id="liveBtn" title="Open LIVE controls">LIVE TOOLS</button><div class="mode-toggle"><button id="easyBtn" class="active">EASY</button><button id="advBtn">ADV</button></div>
+  <button id="liveBtn" title="Open LIVE controls">LIVE TOOLS</button><div class="mode-toggle"><button id="easyBtn" class="active">EASY</button><button id="advBtn">ADVANCED</button></div>
   <button id="themeBtn" title="Toggle light/dark">◐</button>
 </header>
 
@@ -349,7 +491,71 @@ body.tool-show-all .sidebar,body.tool-show-all .rightbar{overflow:auto!important
       <div><b>WORKFLOW TOOLS</b><span id="leftToolContext">CAPTURE</span></div>
       <button id="showAllTools" title="Show all workflow tools">ALL TOOLS</button>
     </div>
-    <section class="section" data-tool-stage="capture">
+    <section id="easyWorkflow" class="easy-workflow">
+      <div id="easyMobileBar" class="easy-mobile-bar">
+        <div class="easy-mobile-summary">
+          <b id="easyMobileStage">CAPTURE</b>
+          <span id="easyMobileStatus">Pointer ready.</span>
+        </div>
+        <button id="easyMobileToggle" aria-expanded="false">TOOLS ▲</button>
+      </div>
+      <div class="easy-sheet-body">
+      <div class="easy-stage-tabs">
+        <button id="easyStageCapture" class="active" data-easy-stage="capture">1 CAPTURE</button>
+        <button id="easyStageEdit" data-easy-stage="edit">2 EDIT</button>
+        <button id="easyStageExport" data-easy-stage="export">3 EXPORT</button>
+      </div>
+
+      <div class="easy-stage active" data-easy-content="capture">
+        <div class="easy-title">CAPTURE</div>
+        <div class="easy-source-row">
+          <button id="easyPointer" class="active">POINTER</button>
+          <button id="easyCamera">CAMERA</button>
+          <button id="easyImport">IMPORT</button>
+        </div>
+        <button id="easyRecord" class="primary easy-hero">RECORD</button>
+        <button id="easyClear">CLEAR / NEW</button>
+        <div id="easyCaptureStatus" class="easy-status">Pointer ready.</div>
+      </div>
+
+      <div class="easy-stage" data-easy-content="edit">
+        <div class="easy-title">EDIT</div>
+        <div class="easy-style-row">
+          <button data-easy-style="ink" class="active">INK</button>
+          <button data-easy-style="raw">RAW</button>
+          <button data-easy-style="ribbon">RIBBON</button>
+          <button data-easy-style="plotter">PLOTTER</button>
+        </div>
+        <label>Opacity <output id="easySimpleOpacityOut">100%</output><input id="easySimpleOpacity" type="range" min="5" max="100" value="100"></label>
+        <label>Thickness <output id="easySimpleWidthOut">4.0 px</output><input id="easySimpleWidth" type="range" min=".5" max="24" step=".5" value="4"></label>
+        <div class="mini-label">TRACE COLOR</div>
+        <div class="trace-palette easy-simple-palette">
+          <button class="trace-swatch" data-easy-color="#111111" style="background:#111111" title="Black"></button>
+          <button class="trace-swatch" data-easy-color="#ffffff" style="background:#ffffff" title="White"></button>
+          <button class="trace-swatch" data-easy-color="#e63946" style="background:#e63946" title="Red"></button>
+          <button class="trace-swatch" data-easy-color="#ff8c00" style="background:#ff8c00" title="Orange"></button>
+          <button class="trace-swatch" data-easy-color="#06d6a0" style="background:#06d6a0" title="Green"></button>
+          <button class="trace-swatch" data-easy-color="#118ab2" style="background:#118ab2" title="Blue"></button>
+          <button class="trace-swatch" data-easy-color="#8338ec" style="background:#8338ec" title="Violet"></button>
+          <button id="easySimpleCustom" class="trace-custom">CUSTOM…</button>
+          <input id="easySimpleColor" type="color" value="#111111" class="hidden-color-picker" aria-label="Custom trace color">
+        </div>
+        <div class="easy-play-row">
+          <button id="easyPlay">▶ PLAY</button>
+          <button id="easyAuto">AUTO STYLE</button>
+        </div>
+      </div>
+
+      <div class="easy-stage" data-easy-content="export">
+        <div class="easy-title">EXPORT</div>
+        <button id="easyExportImage" class="primary easy-hero">EXPORT SVG</button>
+        <button id="easyExportPng">EXPORT PNG</button>
+        <button id="easyExportVideo">EXPORT PLAYBACK VIDEO</button>
+        <div id="easyExportStatus" class="easy-status">Choose an export.</div>
+      </div>
+      </div>
+    </section>
+    <section class="section advanced-shell-only" data-tool-stage="capture">
       <h3>Capture</h3>
       <div class="source-list">
         <button id="sourcePointer" data-source="pointer" class="source-active">Pointer</button><button id="sourceMulti" data-source="multitouch">Multi</button><button id="sourceCamera" data-source="camera">Camera</button><button id="sourceSensor" data-source="sensor">Sensor</button><button id="sourceImport" data-source="import">Import Motion</button>
@@ -361,7 +567,7 @@ body.tool-show-all .sidebar,body.tool-show-all .rightbar{overflow:auto!important
       <input type="file" id="motionDataFile" accept=".csv,.json,text/csv,application/json" class="hidden">
     </section>
 
-    <section class="section easy-only" data-tool-stage="stylize">
+    <section class="section advanced-shell-only" data-tool-stage="stylize">
       <h3>Style</h3>
       <div class="preset-grid">
         <button data-style="ink" class="active">INK</button><button data-style="ribbon">RIBBON</button><button data-style="plotter">PLOTTER</button><button data-style="pulse">PULSE</button><button data-style="skeleton">SKELETON</button><button data-style="constellation">CONSTELLATION</button><button data-style="seismic">SEISMIC</button><button data-style="echo">ECHO</button><button data-style="notation">NOTATION</button>
@@ -392,7 +598,7 @@ body.tool-show-all .sidebar,body.tool-show-all .rightbar{overflow:auto!important
       <button id="easyExport" class="full primary">EXPORT SVG</button>
     </section>
 
-    <section class="section" data-tool-stage="library">
+    <section class="section advanced-shell-only" data-tool-stage="library">
       <h3>Gesture Library</h3>
       <div class="library-tools">
         <div class="library-row"><input id="librarySearch" placeholder="Search name, tag, source"><select id="librarySort"><option value="newest">Newest</option><option value="name">Name</option><option value="duration">Duration</option><option value="character">Character</option></select></div>
@@ -418,7 +624,7 @@ body.tool-show-all .sidebar,body.tool-show-all .rightbar{overflow:auto!important
       </div>
     </section>
 
-    <section class="section">
+    <section class="section advanced-shell-only">
       <h3>Project</h3>
       <div class="toolbar">
         <button id="newProject">New</button><button id="renameProject">Rename</button><button id="deleteProject" class="danger">Delete</button>
@@ -509,7 +715,7 @@ body.tool-show-all .sidebar,body.tool-show-all .rightbar{overflow:auto!important
         <div class="content stack">
           <div class="toolbar"><button id="stopCamera">Stop Camera</button></div>
           <div class="row"><select id="cameraTracker"><option value="color" selected>Color Target</option><option value="light">Bright Point</option><option value="motion">Motion Centroid</option></select><button id="lockCameraTarget">LOCK TARGET</button></div>
-          <div class="source-status"><b>CAMERA FLOW</b> · Select Camera → tap target → Lock Target → Record</div>
+          <div class="source-status"><b>CAMERA FLOW</b> · Select Camera → tap target → Record. Lock Target improves stability but is optional for LIVE.</div>
           <div id="cameraTargetStatus" class="signal-readout">TRACKED POINT · color target not selected · confidence —</div>
           <div id="signalReadout" class="signal-readout">No physical source active.</div>
           <div class="char-note">Sensor capture is treated as motion signal data. GESTURE does not claim accelerometer data alone reconstructs precise absolute spatial position.</div>
@@ -822,7 +1028,7 @@ body.tool-show-all .sidebar,body.tool-show-all .rightbar{overflow:auto!important
 (() => {
 'use strict';
 
-const APP_VERSION='5.5';
+const APP_VERSION='6.3';
 const STORAGE_KEY='gesture-field-instrument-v1';
 const RECOVERY_KEY='gesture-field-instrument-recovery-v36';
 const SVG_NS='http://www.w3.org/2000/svg';
@@ -1217,7 +1423,7 @@ const MultiTouchEngine={
     if(!state.capture.recording)return;const pts=[...state.capture.multi.values()];if(!pts.length)return;const a=pts[0],b=pts[1]||pts[0],t=performance.now()-state.capture.startTime,mx=(a.x+b.x)/2,my=(a.y+b.y)/2,d=Math.hypot(b.x-a.x,b.y-a.y),rot=Math.atan2(b.y-a.y,b.x-a.x),last=state.capture.multiSamples.at(-1),rv=last?Math.abs(d-(last.touchDistance||d))/Math.max(.001,(t-last.t)/1000):0;
     const s={t,x:mx,y:my,pressure:(a.pressure+b.pressure)/2,source:'multitouch',confidence:1,touchAX:a.x,touchAY:a.y,touchBX:b.x,touchBY:b.y,touchDistance:d,touchRotation:rot,relativeVelocity:rv};if(!last||t-last.t>7||dist(last,s)>.3){state.capture.multiSamples.push(s);state.capture.current=state.capture.multiSamples;renderLiveCapture()}
   },
-  finish(){const raw=state.capture.multiSamples.slice();state.capture.recording=false;state.capture.armed=false;state.capture.multi.clear();els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';CaptureEngine.commit(raw,'multitouch')}
+  finish(){const raw=state.capture.multiSamples.slice();state.capture.recording=false;state.capture.armed=false;state.capture.multi.clear();els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';if(els.easyRecord)els.easyRecord.textContent='RECORD';CaptureEngine.commit(raw,'multitouch')}
 };
 const SensorEngine={
   async enable(){
@@ -1230,7 +1436,7 @@ const SensorEngine={
   motion(e){const a=e.accelerationIncludingGravity||e.acceleration||{},r=e.rotationRate||{};Object.assign(state.sensor.last,{ax:a.x||0,ay:a.y||0,az:a.z||0,gx:r.alpha||0,gy:r.beta||0,gz:r.gamma||0});SensorEngine.feed()},
   orientation(e){Object.assign(state.sensor.last,{alpha:e.alpha||0,beta:e.beta||0,gamma:e.gamma||0});SensorEngine.feed()},
   start(){state.sensor.recording=true;state.sensor.startTime=performance.now();state.sensor.samples=[];setStateLabel('RECORDING');els.recordBtn.textContent='RECORDING'},
-  stop(){state.sensor.recording=false;const raw=state.sensor.samples.slice();els.recordBtn.textContent='RECORD';CaptureEngine.commit(raw,'sensor')},
+  stop(){state.sensor.recording=false;const raw=state.sensor.samples.slice();els.recordBtn.textContent='RECORD';if(els.easyRecord)els.easyRecord.textContent='RECORD';CaptureEngine.commit(raw,'sensor')},
   feed(){
     const v=state.sensor.last;els.signalReadout.textContent=`ACC ${fmt(v.ax,2)}, ${fmt(v.ay,2)}, ${fmt(v.az,2)} · GYRO ${fmt(v.gx,1)}, ${fmt(v.gy,1)}, ${fmt(v.gz,1)} · ORIENT ${fmt(v.alpha,0)}, ${fmt(v.beta,0)}, ${fmt(v.gamma,0)}`;
     const make=t=>({t,x:500+clamp(v.gamma,-90,90)*4.5,y:350+clamp(v.beta,-90,90)*3.2,pressure:0,source:'sensor',confidence:1,accelX:v.ax,accelY:v.ay,accelZ:v.az,gyroX:v.gx,gyroY:v.gy,gyroZ:v.gz,orientationAlpha:v.alpha,orientationBeta:v.beta,orientationGamma:v.gamma});
@@ -1249,7 +1455,7 @@ const CameraEngine={
   },
   stop(){
     cancelAnimationFrame(state.camera.raf);state.camera.stream?.getTracks().forEach(t=>t.stop());state.camera.stream=null;state.camera.prevFrame=null;state.camera.targetConfidence=0;els.webcamVideo.srcObject=null;els.cameraStage.classList.add('hidden');this.updateTargetStatus();
-    if(state.capture.sourceMode==='camera'&&(state.capture.recording||state.capture.armed)){state.capture.recording=false;state.capture.armed=false;state.capture.current=[];els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';setStateLabel('READY');MobileUI?.syncRecord?.()}
+    if(state.capture.sourceMode==='camera'&&(state.capture.recording||state.capture.armed)){state.capture.recording=false;state.capture.armed=false;state.capture.current=[];els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';if(els.easyRecord)els.easyRecord.textContent='RECORD';setStateLabel('READY');MobileUI?.syncRecord?.()}
   },
   sampleAt(x,y){
     const c=els.webcamOverlay,ctx=c.getContext('2d'),v=els.webcamVideo;if(!v.videoWidth)return;
@@ -1265,7 +1471,7 @@ const CameraEngine={
   },
   updateTargetStatus(){
     if(!els.cameraTargetStatus)return;const mode=els.cameraTracker.value;const label=mode==='color'?(state.camera.targetSelected?(state.camera.targetLocked?'locked color target':'color target selected'):'color target not selected'):mode==='light'?'brightest point':mode==='motion'?'motion centroid':mode;
-    els.cameraTargetStatus.textContent=`TRACKED POINT · ${label} · confidence ${state.camera.targetConfidence?Math.round(state.camera.targetConfidence*100)+'%':'—'}`;els.trackedPointLabel.classList.toggle('locked',!!state.camera.targetLocked)
+    els.cameraTargetStatus.textContent=`TRACKED POINT · ${label} · confidence ${state.camera.targetConfidence?Math.round(state.camera.targetConfidence*100)+'%':'—'}${state.camera.targetSelected&&!state.camera.targetLocked?' · lock optional for LIVE':''}`;els.trackedPointLabel.classList.toggle('locked',!!state.camera.targetLocked)
     },
   minimize(){
     state.camera.minimized=true;els.cameraStage.classList.add('minimized');els.restoreCamera.classList.remove('hidden')
@@ -1309,25 +1515,56 @@ const ImportEngine={
 const LiveEngine={
   async toggle(){
     if(state.live.enabled||state.live.starting){if(state.live.enabled)this.stop();return}
-    state.live.starting=true;this.status('starting '+(state.capture.sourceMode||'pointer')+'…');els.liveToggle.textContent='STARTING…';
+    ToolShell.showStage('live');
+    state.live.starting=true;this.status('starting '+(state.capture.sourceMode||'pointer')+'…');els.liveToggle.textContent='STARTING…';els.liveToggle.disabled=true;
+    actionFeedback('Starting LIVE DRAW…','ok');
     const ok=await this.ensureSourceReady();
-    state.live.starting=false;
-    if(!ok){els.liveToggle.textContent='START LIVE DRAW';els.liveToggle.classList.remove('live-on');setStateLabel('LIVE NOT READY');return}
+    state.live.starting=false;els.liveToggle.disabled=false;
+    if(!ok){
+      els.liveToggle.textContent='START LIVE DRAW';els.liveToggle.classList.remove('live-on');document.body.classList.remove('live-draw-active');setStateLabel('LIVE NOT READY');
+      actionFeedback('LIVE DRAW could not start — check the LIVE INPUT message.','warn');updateControlStates();return
+    }
     state.live.enabled=true;state.live.startTime=performance.now();state.live.frozen=false;state.live.samples=[];state.live.fullSamples=[];state.live.lastInputAt=0;state.live.inputCount=0;state.live.inputRate=0;this.syncRecipe();
-    els.liveToggle.classList.add('live-on');els.liveToggle.textContent='EXIT LIVE';setStateLabel('LIVE');this.status('armed · waiting for '+(state.capture.sourceMode||'pointer')+' input');renderAll()
+    document.body.classList.add('live-draw-active');els.liveToggle.classList.add('live-on');els.liveToggle.textContent='STOP LIVE DRAW';setStateLabel('LIVE');
+    this.status('armed · move on the canvas · '+(state.capture.sourceMode||'pointer')+' input');
+    els.sourceBadge.textContent=(state.capture.sourceMode||'pointer').toUpperCase();els.sourceBadge.classList.remove('hidden');
+    els.sceneBadge.textContent='LIVE';els.sceneBadge.classList.remove('hidden');
+    actionFeedback('LIVE DRAW active — move on the canvas.','ok');
+    if(MobileUI.isMobile())MobileUI.open('canvas');else els.gestureSvg.scrollIntoView({behavior:'smooth',block:'center'});
+    renderAll();updateControlStates()
   },
   stop(){
-    state.live.enabled=false;state.live.starting=false;if(state.live.performance)this.performance(false);els.liveToggle.classList.remove('live-on');els.liveToggle.textContent='START LIVE DRAW';setStateLabel('READY');this.status('idle');renderAll()
+    state.live.enabled=false;state.live.starting=false;if(state.live.performance)this.performance(false);document.body.classList.remove('live-draw-active');
+    els.liveToggle.classList.remove('live-on');els.liveToggle.textContent='START LIVE DRAW';setStateLabel('READY');this.status('idle');
+    actionFeedback('LIVE DRAW stopped.','ok');renderAll();updateControlStates()
   },
   async ensureSourceReady(){
     const mode=state.capture.sourceMode||'pointer';
     if(mode==='pointer'||mode==='live')return true;
     if(mode==='camera'){
-      if(els.cameraTracker.value==='color'&&!state.camera.targetLocked){els.signalReadout.textContent=state.camera.targetSelected?'Lock the camera target before entering LIVE.':'Tap a camera target and lock it before entering LIVE.';this.status('camera target not ready');return false}
-      const ok=await CameraEngine.start();if(ok){CameraEngine.restore();this.status('camera ready')}return !!ok
+      const ok=await CameraEngine.start();if(!ok){this.status('camera unavailable');return false}
+      CameraEngine.restore();
+      const modeName=els.cameraTracker.value,hasPoint=!!state.camera.lastPoint,conf=Number(state.camera.targetConfidence||state.camera.lastPoint?.confidence||0);
+      const colorReady=modeName!=='color'||state.camera.targetLocked||state.camera.targetSelected||(hasPoint&&conf>=.2);
+      if(!colorReady){
+        els.signalReadout.textContent='Camera is running, but no trackable target has been established yet.';
+        this.status('camera running · waiting for target');
+        actionFeedback('Camera is live, but GESTURE needs a tracked point before LIVE DRAW can start.','warn');
+        return false
+      }
+      if(modeName==='color'&&!state.camera.targetLocked){
+        this.status(`camera tracking · ${Math.round(conf*100)}% · unlocked target accepted`);
+        actionFeedback('LIVE DRAW using the active camera track. Lock Target is optional.','ok')
+      }else{
+        this.status(`camera ready · ${Math.round(conf*100)}% confidence`)
+      }
+      return true
     }
     if(mode==='sensor'){const ok=await SensorEngine.enable();this.status(ok?'sensor ready':'sensor permission unavailable');return !!ok}
     if(mode==='multitouch')return true;
+    if(mode==='import'){
+      state.capture.sourceMode='pointer';SourceManager?.sync?.();this.status('Import Motion is not live · switched to Pointer');actionFeedback('LIVE DRAW switched input to Pointer.','ok');return true
+    }
     this.status('source '+mode+' is not a LIVE input');return false
   },
   status(msg){
@@ -1362,7 +1599,7 @@ const LiveEngine={
   setFade(){state.live.fade=!state.live.fade;els.liveFadeToggle.classList.toggle('active',state.live.fade);els.liveFadeToggle.textContent=state.live.fade?'FADE ON':'FADE OFF';this.render()},
   watchdog(){
     if(!state.live.enabled)return;const age=state.live.lastInputAt?performance.now()-state.live.lastInputAt:Infinity;
-    if(age>1800)this.status(`armed · no ${state.capture.sourceMode||'pointer'} samples received`);
+    if(age>1800)this.status(`armed · no ${state.capture.sourceMode||'pointer'} samples · move across the canvas`);
   }
 };
 
@@ -1376,23 +1613,23 @@ const CaptureEngine={
       if(state.capture.recording){
         const raw=state.capture.current.slice();
         state.capture.recording=false;state.capture.armed=false;
-        els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';
+        els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';if(els.easyRecord)els.easyRecord.textContent='RECORD';
         if(raw.length>=3){setStateLabel('CAPTURED');this.commit(raw,'camera','Camera Gesture')}
         else{state.capture.current=[];setStateLabel('CAMERA READY');renderAll();els.signalReadout.textContent='Camera recorded fewer than 3 tracked samples. Check tracker confidence or target visibility and try again.'}
         CameraEngine.hidePreview();
         return
       }
       state.capture.armed=true;
-      els.recordBtn.classList.add('recording');els.recordBtn.textContent='STARTING CAMERA…';
+      els.recordBtn.classList.add('recording');els.recordBtn.textContent='STARTING CAMERA…';if(els.easyRecord)els.easyRecord.textContent='STARTING…';
       setStateLabel('CAMERA STARTING');setWorkflow('capture');MobileUI?.syncRecord?.();
       CameraEngine.start().then(ok=>{
         if(!ok){
           state.capture.armed=false;state.capture.recording=false;
-          els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';
+          els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';if(els.easyRecord)els.easyRecord.textContent='RECORD';
           setStateLabel('CAMERA ERROR');MobileUI?.syncRecord?.();return
         }
         state.capture.armed=true;state.capture.recording=true;state.capture.startTime=performance.now();state.capture.current=[];
-        els.recordBtn.classList.add('recording');els.recordBtn.textContent='STOP & SAVE';
+        els.recordBtn.classList.add('recording');els.recordBtn.textContent='STOP & SAVE';if(els.easyRecord)els.easyRecord.textContent='STOP & SAVE';
         setStateLabel('RECORDING CAMERA');MobileUI?.syncRecord?.()
       });
       return
@@ -1400,8 +1637,8 @@ const CaptureEngine={
     state.capture.armed=!state.capture.armed;state.capture.recording=false;state.capture.current=[];state.capture.pointerId=null;state.capture.multi.clear();state.capture.multiSamples=[];els.recordBtn.classList.toggle('recording',state.capture.armed);els.recordBtn.textContent=state.capture.armed?(mode==='multitouch'?'ARMED — TOUCH':'ARMED — DRAW'):'RECORD';setStateLabel('READY');setWorkflow('capture');
   },
   pointerDown(e){
-    if(!state.capture.armed&&LayerInteraction.down(e))return;
     LiveEngine.pointer(e);
+    if(!state.capture.armed&&LayerInteraction.down(e))return;
     if(state.capture.sourceMode==='multitouch'){if(state.capture.armed)MultiTouchEngine.down(e);return}
     if(!state.capture.armed||state.capture.sourceMode!=='pointer')return;
     e.preventDefault();
@@ -1409,12 +1646,12 @@ const CaptureEngine={
     els.gestureSvg.setPointerCapture?.(e.pointerId);
     state.capture.startTime=performance.now(); state.capture.startEventTime=Number.isFinite(e.timeStamp)?e.timeStamp:state.capture.startTime; state.capture.current=[];
     const p=this.sampleFromEvent(e); state.capture.current.push(p);
-    els.recordBtn.textContent='RECORDING';
+    els.recordBtn.textContent='RECORDING';if(els.easyRecord)els.easyRecord.textContent='STOP & SAVE';
     setStateLabel('RECORDING'); renderLiveCapture();
   },
   pointerMove(e){
-    if(LayerInteraction.move(e))return;
     LiveEngine.pointer(e);
+    if(LayerInteraction.move(e))return;
     if(state.capture.sourceMode==='multitouch'){MultiTouchEngine.move(e);return}
     if(!state.capture.recording || e.pointerId!==state.capture.pointerId)return;
     e.preventDefault();
@@ -1441,13 +1678,13 @@ const CaptureEngine={
     return {t:Math.max(0,stamp-state.capture.startEventTime),x,y,pressure:e.pressure||0,tiltX:e.tiltX||0,tiltY:e.tiltY||0,azimuth:e.twist||0,source:e.pointerType||'pointer',confidence:1,eventLag:lag};
   },
   finish(){
-    const raw=state.capture.current.slice();state.capture.recording=false;state.capture.armed=false;state.capture.pointerId=null;els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';this.commit(raw,raw[0]?.source||'pointer');
+    const raw=state.capture.current.slice();state.capture.recording=false;state.capture.armed=false;state.capture.pointerId=null;els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';if(els.easyRecord)els.easyRecord.textContent='RECORD';this.commit(raw,raw[0]?.source||'pointer');
   },
   commit(raw,source='pointer',name=null){
     if(!raw||raw.length<3){setStateLabel('READY');state.capture.current=[];renderAll();return}
     const temporal={reverse:false,normalizeSpeed:false,trimStartPct:0,trimEndPct:100,timeScale:1,removedRanges:[]},analysisConfig={pauseSensitivity:50,reversalSensitivity:50,loopSensitivity:50,adaptiveResample:state.project.captureConfig?.adaptiveResample!==false,noiseFloor:state.project.captureConfig?.noiseFloor||0},analysis=MotionAnalyzer.analyze(raw,analysisConfig),baseRecipe=state.project.recipes[0];
     const g={id:uid(),name:name||`Gesture ${state.project.gestures.length+1}`,created:nowISO(),tags:[],inputSource:source,rawSamples:raw,analysis,temporal,analysisConfig,style:'ink',recipeId:baseRecipe?.id||null,processing:{essence:20,geoTol:2,motionAware:true},styleParams:{baseWidth:4,minTraceWidth:.5,maxTraceWidth:18,traceColor:'#111111',traceOpacity:1,secondaryTraceColor:'#118ab2',secondaryTraceOpacity:.55,canvasColor:'#ffffff',effectStrength:65,echoCount:4,echoOffset:9,seismicScale:18},mappings:deepClone(baseRecipe?.mappings||[]),spatial:{x:0,y:0,rotate:0,scale:1,motionScale:1,mirrorX:false,mirrorY:false,normalize:'none'}};
-    state.project.gestures.push(g);state.project.selectedGestureId=g.id;state.capture.current=[];state.capture.armed=false;state.capture.recording=false;els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';state.playback.t=0;setStateLabel('CAPTURED');setWorkflow('simplify');Store.markDirty();syncControlsFromGesture();renderAll();
+    state.project.gestures.push(g);state.project.selectedGestureId=g.id;state.capture.current=[];state.capture.armed=false;state.capture.recording=false;els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';if(els.easyRecord)els.easyRecord.textContent='RECORD';state.playback.t=0;setStateLabel('CAPTURED');setWorkflow('simplify');Store.markDirty();syncControlsFromGesture();renderAll();
   }
 };
 
@@ -2264,9 +2501,10 @@ function updateControlStates(){
   set('exportChecked',!checked,'Check at least one gesture first.');set('clearChecks',!checked,'No gestures are checked.');
   set('saveLiveTake',state.live.samples.length<3,'LIVE WINDOW needs at least 3 incoming samples.');set('savePerformance',state.live.fullSamples.length<3,'PERFORMANCE needs at least 3 incoming samples.');
   set('clearLive',state.live.samples.length===0&&state.live.fullSamples.length===0,'LIVE buffer is already empty.');set('freezeLive',!state.live.enabled,'Start LIVE DRAW first.');set('performanceMode',!state.live.enabled,'Start LIVE DRAW first.');
+  set('liveToggle',!!state.live.starting,'LIVE DRAW is starting.');
 }
 function renderAll(){
-  updateControlStates();
+  updateControlStates();EasyWorkflow.sync();
   const g=selectedGesture();
   els.projectTitle.textContent=state.project.name;
   els.gestureNameBadge.textContent=g?.name||'No gesture';
@@ -2519,6 +2757,72 @@ const ControlAudit={
   run(){const buttons=[...document.querySelectorAll('button')],dead=buttons.filter(b=>!this.routed(b));const duplicateRoles=[];if(document.getElementById('sourceLive'))duplicateRoles.push('LIVE source');if(document.getElementById('startCamera'))duplicateRoles.push('Start Camera duplicate');if(document.getElementById('importMotionBtn'))duplicateRoles.push('Import Motion duplicate');return {buttons:buttons.length,dead:dead.map(b=>b.id||b.textContent.trim()),duplicateRoles}},
   report(){const r=this.run();if(r.dead.length||r.duplicateRoles.length){console.warn('GESTURE control audit',r);actionFeedback(`Control audit: ${r.dead.length} unbound, ${r.duplicateRoles.length} duplicate`,'warn')}return r}
 };
+const EasyMobileSheet={
+  expanded:false,
+  isMobile(){return matchMedia('(max-width:680px)').matches},
+  set(expanded){
+    this.expanded=!!expanded;
+    document.body.classList.toggle('easy-sheet-collapsed',!this.expanded&&this.isMobile());
+    if(els.easyMobileToggle){
+      els.easyMobileToggle.textContent=this.expanded?'TOOLS ▼':'TOOLS ▲';
+      els.easyMobileToggle.setAttribute('aria-expanded',String(this.expanded))
+    }
+  },
+  toggle(){this.set(!this.expanded)},
+  collapse(){if(this.isMobile())this.set(false)},
+  expand(){if(this.isMobile())this.set(true)},
+  sync(stage,status){
+    if(els.easyMobileStage)els.easyMobileStage.textContent=(stage||'capture').toUpperCase();
+    if(els.easyMobileStatus&&status)els.easyMobileStatus.textContent=status
+  }
+};
+
+const EasyWorkflow={
+  stage:'capture',
+  setStage(stage){
+    this.stage=stage;
+    document.querySelectorAll('[data-easy-stage]').forEach(b=>b.classList.toggle('active',b.dataset.easyStage===stage));
+    document.querySelectorAll('[data-easy-content]').forEach(p=>p.classList.toggle('active',p.dataset.easyContent===stage));
+    EasyMobileSheet.sync(stage,els.easyCaptureStatus?.textContent||'Ready.')
+  },
+  source(mode){
+    if(mode==='pointer'){SourceManager.select('pointer');els.easyCaptureStatus.textContent='Pointer ready. Press RECORD, then draw on the canvas.';EasyMobileSheet.sync(this.stage,els.easyCaptureStatus.textContent)}
+    if(mode==='camera'){SourceManager.select('camera');els.easyCaptureStatus.textContent='Camera preview starting. Tap the target in the preview, then RECORD.';EasyMobileSheet.sync(this.stage,els.easyCaptureStatus.textContent)}
+    if(mode==='import'){SourceManager.select('import');els.easyCaptureStatus.textContent='Choose a motion CSV or JSON file.';EasyMobileSheet.sync(this.stage,els.easyCaptureStatus.textContent)}
+    document.querySelectorAll('.easy-source-row button').forEach(b=>b.classList.remove('active'));
+    const active=mode==='pointer'?els.easyPointer:mode==='camera'?els.easyCamera:els.easyImport;active.classList.add('active')
+  },
+  sync(){
+    const g=selectedGesture();
+    if(g){
+      els.easySimpleOpacity.value=Math.round((g.styleParams?.traceOpacity??1)*100);
+      els.easySimpleOpacityOut.textContent=`${els.easySimpleOpacity.value}%`;
+      els.easySimpleWidth.value=g.styleParams?.baseWidth??4;
+      els.easySimpleWidthOut.textContent=`${Number(els.easySimpleWidth.value).toFixed(1)} px`;
+      els.easySimpleColor.value=g.styleParams?.traceColor||'#111111';
+      document.querySelectorAll('[data-easy-color]').forEach(b=>b.classList.toggle('active',b.dataset.easyColor.toLowerCase()===(g.styleParams?.traceColor||'#111111').toLowerCase()));
+      document.querySelectorAll('[data-easy-style]').forEach(b=>b.classList.toggle('active',b.dataset.easyStyle===(g.style||'ink')))
+    }
+  },
+  appearance(){
+    const g=selectedGesture();if(!g){actionFeedback('Record or import a gesture first.','warn');return}
+    g.styleParams.traceOpacity=Number(els.easySimpleOpacity.value)/100;
+    g.styleParams.baseWidth=Number(els.easySimpleWidth.value);
+    g.styleParams.traceColor=els.easySimpleColor.value;
+    els.easySimpleOpacityOut.textContent=`${els.easySimpleOpacity.value}%`;
+    els.easySimpleWidthOut.textContent=`${Number(els.easySimpleWidth.value).toFixed(1)} px`;
+    Store.markDirty();this.sync();renderGesture()
+  },
+  style(style){
+    const g=selectedGesture();if(!g){actionFeedback('Record or import a gesture first.','warn');return}
+    g.style=style;Store.markDirty();this.sync();renderGesture()
+  },
+  exportVideo(){
+    if(!selectedGesture()&&!state.project.layersEnabled&&!state.project.composition?.enabled){actionFeedback('Record or import a gesture first.','warn');return}
+    PlaybackVideoEngine.export()
+  }
+};
+
 const ToolShell={
   stage:'capture',
   filter:false,
@@ -2533,17 +2837,17 @@ const ToolShell={
     document.body.classList.remove('tool-show-all');
     document.querySelectorAll('[data-tool-stage]').forEach(el=>{
       const tag=el.dataset.toolStage;
-      const active=tag===stage || (stage==='capture'&&tag==='library') || (stage==='export'&&tag==='system');
+      const active=tag===stage || tag==='live' || (stage==='capture'&&tag==='library') || (stage==='export'&&tag==='system');
       el.classList.toggle('tool-stage-active',active)
     });
     if(opts.open!==false){
       document.querySelectorAll(`details[data-tool-stage="${stage}"]`).forEach(d=>d.open=true)
     }
   },
-  showAll(){
+  showAll(silent=false){
     this.filter=false;document.body.classList.remove('tool-filter-active');document.body.classList.add('tool-show-all');this.setContext('all');
     document.querySelectorAll('[data-tool-stage]').forEach(el=>el.classList.remove('tool-stage-active'));
-    actionFeedback('All tools restored.','ok')
+    if(!silent)actionFeedback('All tools restored.','ok')
   },
   reset(){
     document.body.classList.remove('tool-filter-active','tool-show-all','mobile-panel-open','mobile-left','mobile-right');
@@ -2596,6 +2900,25 @@ const WorkflowNav={
 };
 
 function bind(){
+  els.easyMobileToggle.onclick=()=>EasyMobileSheet.toggle();
+  document.querySelectorAll('[data-easy-stage]').forEach(b=>b.onclick=()=>EasyWorkflow.setStage(b.dataset.easyStage));
+  els.easyPointer.onclick=()=>EasyWorkflow.source('pointer');
+  els.easyCamera.onclick=()=>EasyWorkflow.source('camera');
+  els.easyImport.onclick=()=>EasyWorkflow.source('import');
+  els.easyRecord.onclick=()=>{CaptureEngine.arm();EasyMobileSheet.collapse()};
+  els.easyClear.onclick=()=>clearCurrentGestureState();
+  document.querySelectorAll('[data-easy-style]').forEach(b=>b.onclick=()=>EasyWorkflow.style(b.dataset.easyStyle));
+  els.easySimpleOpacity.oninput=()=>EasyWorkflow.appearance();
+  els.easySimpleWidth.oninput=()=>EasyWorkflow.appearance();
+  document.querySelectorAll('[data-easy-color]').forEach(b=>b.onclick=()=>{els.easySimpleColor.value=b.dataset.easyColor;EasyWorkflow.appearance()});
+  els.easySimpleCustom.onclick=()=>els.easySimpleColor.click();
+  els.easySimpleColor.oninput=()=>EasyWorkflow.appearance();
+  els.easyPlay.onclick=()=>PlaybackEngine.toggle();
+  els.easyAuto.onclick=()=>autoInterpret();
+  els.easyExportImage.onclick=()=>exportSvg();
+  els.easyExportPng.onclick=()=>exportPng();
+  els.easyExportVideo.onclick=()=>EasyWorkflow.exportVideo();
+
   document.querySelectorAll('.workflow [data-step]').forEach(b=>b.onclick=()=>WorkflowNav.go(b.dataset.step));
   els.showAllTools.onclick=()=>ToolShell.showAll();
   els.resetToolView.onclick=()=>ToolShell.reset();
@@ -2604,7 +2927,7 @@ function bind(){
   document.querySelectorAll('[data-source]').forEach(b=>b.onclick=()=>SourceManager.set(b.dataset.source));
   els.motionDataFile.onchange=async()=>{const f=els.motionDataFile.files[0];if(!f)return;try{await ImportEngine.file(f)}catch(e){alert('Could not import motion data: '+e.message)}els.motionDataFile.value=''};
   els.stopCamera.onclick=()=>CameraEngine.stop();els.lockCameraTarget.onclick=()=>CameraEngine.toggleLock();els.minimizeCamera.onclick=()=>CameraEngine.minimize();els.restoreCamera.onclick=()=>CameraEngine.restore();els.webcamOverlay.onclick=e=>{const r=els.webcamOverlay.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*els.webcamOverlay.width,y=(e.clientY-r.top)/r.height*els.webcamOverlay.height;CameraEngine.sampleAt(x,y)};els.cameraTracker.onchange=()=>{state.camera.prevFrame=null;if(els.cameraTracker.value!=='color'){state.camera.targetLocked=false;els.lockCameraTarget.classList.remove('active');els.lockCameraTarget.textContent='LOCK TARGET'}CameraEngine.updateTargetStatus();els.signalReadout.textContent='Camera tracker: '+els.cameraTracker.options[els.cameraTracker.selectedIndex].text};
-  els.liveBtn.onclick=()=>{if(MobileUI.isMobile())MobileUI.open('more');else{const s=[...document.querySelectorAll('.sidebar .section')].find(x=>x.querySelector('h3')?.textContent.trim()==='LIVE');s?.scrollIntoView({behavior:'smooth',block:'start'});actionFeedback('LIVE controls opened.','ok')}};els.liveToggle.onclick=()=>LiveEngine.toggle();els.saveLiveTake.onclick=()=>LiveEngine.saveWindow();els.savePerformance.onclick=()=>LiveEngine.savePerformance();els.clearLive.onclick=()=>LiveEngine.clear();els.freezeLive.onclick=()=>LiveEngine.freeze();els.performanceMode.onclick=()=>LiveEngine.performance();els.liveFadeToggle.onclick=()=>LiveEngine.setFade();els.livePrevRecipe.onclick=()=>LiveEngine.stepRecipe(-1);els.liveNextRecipe.onclick=()=>LiveEngine.stepRecipe(1);els.liveRecipe.onchange=()=>LiveEngine.setRecipeById(els.liveRecipe.value);els.liveWindow.oninput=()=>{state.live.windowMs=Number(els.liveWindow.value)*1000;els.liveWindowOut.textContent=`${els.liveWindow.value} s`};els.liveFade.oninput=()=>{state.live.fadeMs=Number(els.liveFade.value)*1000;els.liveFadeOut.textContent=`${els.liveFade.value} s`};
+  els.liveBtn.onclick=()=>{ToolShell.showStage('live');if(MobileUI.isMobile())MobileUI.open('more');else{const s=[...document.querySelectorAll('.sidebar .section')].find(x=>x.querySelector('h3')?.textContent.trim()==='LIVE');s?.scrollIntoView({behavior:'smooth',block:'start'});actionFeedback('LIVE controls opened.','ok')}};els.liveToggle.onclick=()=>LiveEngine.toggle();els.saveLiveTake.onclick=()=>LiveEngine.saveWindow();els.savePerformance.onclick=()=>LiveEngine.savePerformance();els.clearLive.onclick=()=>LiveEngine.clear();els.freezeLive.onclick=()=>LiveEngine.freeze();els.performanceMode.onclick=()=>LiveEngine.performance();els.liveFadeToggle.onclick=()=>LiveEngine.setFade();els.livePrevRecipe.onclick=()=>LiveEngine.stepRecipe(-1);els.liveNextRecipe.onclick=()=>LiveEngine.stepRecipe(1);els.liveRecipe.onchange=()=>LiveEngine.setRecipeById(els.liveRecipe.value);els.liveWindow.oninput=()=>{state.live.windowMs=Number(els.liveWindow.value)*1000;els.liveWindowOut.textContent=`${els.liveWindow.value} s`};els.liveFade.oninput=()=>{state.live.fadeMs=Number(els.liveFade.value)*1000;els.liveFadeOut.textContent=`${els.liveFade.value} s`};
 
   ['pointerdown','pointermove','pointerup','pointercancel'].forEach(ev=>els.gestureSvg.addEventListener(ev,e=>ev==='pointerdown'?CaptureEngine.pointerDown(e):ev==='pointermove'?CaptureEngine.pointerMove(e):CaptureEngine.pointerUp(e),{passive:false}));
   document.querySelectorAll('[data-style]').forEach(b=>b.onclick=()=>setStyle(b.dataset.style));
@@ -2664,11 +2987,21 @@ function bind(){
     if(e.code==='Space'){e.preventDefault();PlaybackEngine.playPause()}
     if(e.key.toLowerCase()==='r' && !e.metaKey && !e.ctrlKey){e.preventDefault();CaptureEngine.arm()}
     if(e.key==='Escape' && (state.capture.armed||state.capture.recording||state.sensor.recording)){
-      state.capture.armed=false;state.capture.recording=false;state.sensor.recording=false;state.capture.current=[];state.capture.multi.clear();els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';setStateLabel('READY');renderAll();
+      state.capture.armed=false;state.capture.recording=false;state.sensor.recording=false;state.capture.current=[];state.capture.multi.clear();els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';if(els.easyRecord)els.easyRecord.textContent='RECORD';setStateLabel('READY');renderAll();
     }
   });
 
-  els.easyBtn.onclick=()=>{setMode('easy');if(MobileUI.isMobile())MobileUI.open('canvas')};els.advBtn.onclick=()=>{setMode('advanced');if(MobileUI.isMobile())MobileUI.open('advanced')};document.querySelectorAll('[data-focus]').forEach(b=>b.onclick=()=>{setFocus(b.dataset.focus);Store.markDirty()});
+  els.easyBtn.onclick=()=>{
+    setMode('easy');EasyWorkflow.setStage('capture');
+    document.querySelector('.sidebar')?.scrollTo({top:0});
+    actionFeedback('Easy Mode · Capture → Edit → Export','ok')
+  };
+  els.advBtn.onclick=()=>{
+    setMode('advanced');
+    document.querySelectorAll('.sidebar,.rightbar').forEach(p=>p.scrollTop=0);
+    if(MobileUI.isMobile())MobileUI.open('advanced');
+    actionFeedback('Advanced Mode · full instrument restored','ok')
+  };document.querySelectorAll('[data-focus]').forEach(b=>b.onclick=()=>{setFocus(b.dataset.focus);Store.markDirty()});
   els.themeBtn.onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
 
   [els.essence,els.geoTol,els.baseWidth,els.effectStrength].forEach(x=>x.oninput=()=>{
@@ -2776,7 +3109,24 @@ function setFocus(focus='all'){
   state.project.settings.focus=focus;document.querySelectorAll('[data-focus]').forEach(b=>b.classList.toggle('active',b.dataset.focus===focus));const map={capture:['Physical / Imported Motion','Temporal'],analyze:['PATH vs CHARACTER','Simplify'],interpret:['CROSS MAP','Stylize','Mapping Matrix','Recipes'],compose:['Layers','Composition','Compare Mode','Spatial + Motion Transforms'],output:['Animation','Plotter Mode','Export']};document.querySelectorAll('.advanced-only.details > details').forEach(d=>{const title=d.querySelector('summary')?.textContent?.trim()||'';if(title==='Instrument Focus'){d.classList.remove('focus-hidden');return}d.classList.toggle('focus-hidden',focus!=='all'&&!(map[focus]||[]).some(x=>title.startsWith(x)))})
 }
 function setMode(mode){
-  const adv=mode==='advanced';document.body.classList.toggle('advanced',adv);els.easyBtn.classList.toggle('active',!adv);els.advBtn.classList.toggle('active',adv);state.project.settings.mode=mode;Store.markDirty();Timeline.resize()
+  const adv=mode==='advanced',easy=!adv;
+  document.body.classList.toggle('advanced',adv);
+  document.body.classList.toggle('easy',easy);
+  els.easyBtn.classList.toggle('active',easy);
+  els.advBtn.classList.toggle('active',adv);
+  state.project.settings.mode=adv?'advanced':'easy';
+
+  if(easy){
+    document.body.classList.remove('tool-filter-active','tool-show-all','mobile-panel-open','mobile-left','mobile-right');
+    EasyWorkflow.setStage(EasyWorkflow.stage||'capture');
+    if(EasyMobileSheet.isMobile())EasyMobileSheet.set(false);else document.body.classList.remove('easy-sheet-collapsed');
+  }else{
+    document.body.classList.remove('mobile-panel-open','mobile-left','mobile-right','easy-sheet-collapsed');
+    ToolShell.showAll(true);
+  }
+
+  Store.markDirty();
+  requestAnimationFrame(()=>Timeline.resize())
 }
 function setTheme(theme){
   document.documentElement.dataset.theme=theme;state.project.settings.theme=theme;Store.markDirty();renderGrid();renderAll()
@@ -2786,6 +3136,12 @@ function syncProjectMode(){
   const p=state.project.plotter||{};els.penWidth.value=p.penWidth??1;els.minFeature.value=p.minFeature??1.5;els.microSegment.value=p.microSegment??1;els.mergeDistance.value=p.mergeDistance??3;els.travelOptimize.checked=p.travelOptimize!==false;els.penUpPreview.checked=!!p.penUpPreview;els.librarySearch.value=state.project.library?.search||'';els.librarySort.value=state.project.library?.sort||'newest';SourceManager.set(state.capture.sourceMode||'pointer');setFocus(state.project.settings?.focus||'all');const f=state.project.fabrication||{};els.fabricationUnits.value=f.units||'mm';els.pagePreset.value=f.page||'custom';els.outputWidth.value=f.width??254;els.outputHeight.value=f.height??177.8;els.plotFeedRate.value=f.feedRate??40;els.penChangeTime.value=f.penChangeTime??5;els.trueScale.checked=f.trueScale!==false;els.registrationMarks.checked=!!f.registrationMarks;updateOutputs();
 }
 
+window.addEventListener('resize',()=>{
+  if(document.body.classList.contains('easy')){
+    if(EasyMobileSheet.isMobile())EasyMobileSheet.set(EasyMobileSheet.expanded);
+    else document.body.classList.remove('easy-sheet-collapsed')
+  }
+});
 Store.load();
 repairProjectState(state.project);
 bind();

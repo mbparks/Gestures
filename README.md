@@ -1,4 +1,4 @@
-# GESTURE v6.2 — Stable Release
+# GESTURE v6.3 — Stable Release
 
 GESTURE is a browser-native motion-to-mark Field Instrument. It records not only where movement goes, but how it happens: speed, hesitation, acceleration, jerk, repetition, rhythm, pressure, direction, curvature, and supported physical motion signals.
 
@@ -352,3 +352,16 @@ On desktop, the Easy Mode workspace now fills the viewport below the top bar.
 - The canvas stretches to the same height beside the menu.
 - The page itself does not develop a second outer scrollbar in Easy Mode.
 - Mobile keeps the compact bottom-panel layout.
+
+
+## Collapsible Easy Mode mobile sheet — v6.3
+
+On phones, Easy Mode controls are now a collapsible bottom sheet.
+
+- Default mobile state is collapsed.
+- The collapsed bar shows the current Easy stage and status.
+- **TOOLS ▲** expands the controls.
+- **TOOLS ▼** collapses them again.
+- RECORD automatically collapses the sheet so the canvas remains visible while drawing.
+- Expanded controls use at most about 48% of the viewport instead of permanently occupying the lower half.
+- Desktop Easy Mode keeps the full-height left menu.
