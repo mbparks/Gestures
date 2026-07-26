@@ -1,4 +1,4 @@
-# GESTURE v4.1 — Stable Release
+# GESTURE v4.2 — Stable Release
 
 GESTURE is a browser-native motion-to-mark Field Instrument. It records not only where movement goes, but how it happens: speed, hesitation, acceleration, jerk, repetition, rhythm, pressure, direction, curvature, and supported physical motion signals.
 
@@ -61,3 +61,14 @@ v4.1 replaces the vertically stacked desktop interface on phone-sized screens wi
 - Dense expert controls remain available and horizontally scroll when necessary.
 
 Desktop and tablet layouts retain the full instrument.
+
+
+## Clear / New Gesture
+
+v4.2 adds a first-class **CLEAR / NEW GESTURE** action.
+
+- Desktop: directly under **RECORD**.
+- Mobile: permanent **CLEAR** control beside the floating **RECORD** button.
+- Clears the active canvas/capture state, LIVE buffer, playback, Compare, CROSS MAP, Layers, and Composition state.
+- Existing project library gestures remain intact.
+- If active work exists, GESTURE confirms before clearing.

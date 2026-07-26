@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>GESTURE v4.1 — Motion Instrument</title>
+<title>GESTURE v4.2 — Motion Instrument</title>
 <style>
 :root{
   --bg:#0c0f12; --panel:#11161b; --panel2:#171d23; --line:#2b343d; --text:#eef3f7; --muted:#95a3af;
@@ -253,8 +253,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   .mobile-nav{display:grid;position:fixed;left:0;right:0;bottom:0;height:58px;z-index:40;grid-template-columns:repeat(6,1fr);background:color-mix(in srgb,var(--panel) 96%,transparent);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
   .mobile-nav button{border:0;border-right:1px solid var(--line);border-radius:0;background:transparent;font:8px ui-monospace;padding:7px 2px;color:var(--muted)}
   .mobile-nav button.active{background:color-mix(in srgb,var(--accent) 14%,var(--panel));color:var(--text)}
-  .mobile-record-dock{display:block;position:fixed;z-index:35;left:50%;bottom:70px;transform:translateX(-50%);pointer-events:none}
-  .mobile-record{pointer-events:auto;min-width:128px;border-radius:999px;padding:12px 20px;font-weight:900;letter-spacing:.08em;box-shadow:0 10px 28px rgba(0,0,0,.42)}
+  .mobile-record-dock{display:flex;position:fixed;z-index:35;left:50%;bottom:70px;transform:translateX(-50%);pointer-events:none;gap:8px;align-items:center}
+  .mobile-record{pointer-events:auto;min-width:128px;border-radius:999px;padding:12px 20px;font-weight:900;letter-spacing:.08em;box-shadow:0 10px 28px rgba(0,0,0,.42)}.mobile-clear{pointer-events:auto;border-radius:999px;padding:12px 14px;font-weight:800;background:var(--panel);border:1px solid var(--line);box-shadow:0 10px 28px rgba(0,0,0,.32)}
   .mobile-record.recording{background:var(--danger);border-color:var(--danger)}
 
   body.advanced .sidebar>.section.easy-only{display:none!important}
@@ -286,8 +286,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">GESTURE</div><div class="version">v4.1</div>
-  <div class="project-name" id="projectTitle">Untitled Project</div><span class="badge">MOBILE UX</span><button id="undoBtn" title="Undo processed/project change">↶</button><button id="redoBtn" title="Redo processed/project change">↷</button>
+  <div class="brand">GESTURE</div><div class="version">v4.2</div>
+  <div class="project-name" id="projectTitle">Untitled Project</div><span class="badge">RESET UX</span><button id="undoBtn" title="Undo processed/project change">↶</button><button id="redoBtn" title="Redo processed/project change">↷</button>
   <div class="spacer"></div>
   <div class="save" id="saveStatus"><span class="save-dot"></span><span>Saved</span></div>
   <button id="liveBtn" title="Immediate motion-to-mark mode">LIVE</button><div class="mode-toggle"><button id="easyBtn" class="active">EASY</button><button id="advBtn">ADV</button></div>
@@ -303,7 +303,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       </div>
       <div id="sourceStatus" class="source-status">Pointer input · mouse, touch, or stylus pressure.</div>
       <div style="height:8px"></div>
-      <button id="recordBtn" class="big-record primary">RECORD</button>
+      <button id="recordBtn" class="big-record primary">RECORD</button><div style="height:5px"></div><button id="clearGestureBtn" class="full">CLEAR / NEW GESTURE</button>
       <div class="row" style="justify-content:space-between;margin-top:7px"><span class="mini-label">State</span><span id="captureState" class="state-chip">READY</span></div>
       <input type="file" id="motionDataFile" accept=".csv,.json,text/csv,application/json" class="hidden">
     </section>
@@ -664,6 +664,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     <div class="step" data-step="move">MOVE</div><div class="step current" data-step="capture">CAPTURE</div><div class="step" data-step="simplify">SIMPLIFY</div><div class="step" data-step="stylize">STYLIZE</div><div class="step" data-step="export">EXPORT</div>
   </nav>
   <div id="mobileRecordDock" class="mobile-record-dock">
+    <button id="mobileClearBtn" class="mobile-clear">CLEAR</button>
     <button id="mobileRecordBtn" class="mobile-record primary">RECORD</button>
   </div>
   <nav id="mobileNav" class="mobile-nav" aria-label="Mobile instrument navigation">
@@ -681,7 +682,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     <div class="portrait-toolbar"><button id="closeQuickStart">CLOSE</button></div>
     <div class="portrait-page">
       <div class="portrait-title"><h1>GESTURE Quick Start</h1><small>v4.0 STABLE RELEASE</small></div>
-      <h3>EASY</h3><p><b>Record → Auto Interpret → Export.</b> On phones, the canvas is home: use the floating RECORD control and bottom dock for Capture, Style, Library, Insights, and More.</p>
+      <h3>EASY</h3><p><b>Record → Auto Interpret → Export.</b> On phones, the canvas is home: use the floating CLEAR and RECORD controls, plus the bottom dock for Capture, Style, Library, Insights, and More.</p>
       <h3>ADVANCED</h3><p>Use Instrument Focus to narrow the interface to Capture, Analyze, Interpret, Compose, or Output. RAW capture stays untouched; transforms, simplification, CROSS MAP, and style operations are non-destructive.</p>
       <h3>LIVE</h3><p>Choose Pointer, Camera, or Sensor, enter LIVE, then press F for Performance View. Use [ and ] to switch Recipes, X to freeze, and C to clear.</p>
       <h3>FABRICATION</h3><p>Plotter Mode provides physical dimensions, units, path order, travel optimization, estimated plot time, DXF, HPGL, and true-scale SVG.</p>
@@ -701,7 +702,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 (() => {
 'use strict';
 
-const APP_VERSION='4.1';
+const APP_VERSION='4.2';
 const STORAGE_KEY='gesture-field-instrument-v1';
 const RECOVERY_KEY='gesture-field-instrument-recovery-v36';
 const SVG_NS='http://www.w3.org/2000/svg';
@@ -2025,6 +2026,19 @@ function pressureStroke(){
 
 function reanalyzeGesture(g){g.analysisConfig={...(g.analysisConfig||{}),adaptiveResample:state.project.captureConfig?.adaptiveResample!==false,noiseFloor:state.project.captureConfig?.noiseFloor||0};g.analysis=MotionAnalyzer.analyze(processedSamples(g),g.analysisConfig||{})}
 
+function clearCurrentGestureState(){
+  PlaybackEngine.pause?.();state.playback.t=0;state.playback.direction=1;state.inspect.active=false;
+  state.capture.armed=false;state.capture.recording=false;state.capture.current=[];state.capture.multi.clear();state.capture.multiSamples=[];state.sensor.recording=false;
+  state.live.enabled=false;state.live.samples=[];state.live.fullSamples=[];state.live.frozen=false;if(state.live.performance)LiveEngine.performance(false);
+  state.project.compare.enabled=false;state.project.crossMap.enabled=false;state.project.layersEnabled=false;state.project.composition.enabled=false;state.selectedLayerId=null;state.layerDrag=null;
+  const g=selectedGesture();if(g){g.temporal={reverse:false,normalizeSpeed:false,trimStartPct:0,trimEndPct:100,timeScale:1,removedRanges:[]};g.spatial={x:0,y:0,rotate:0,scale:1,motionScale:1,mirrorX:false,mirrorY:false,normalize:'none'}}
+  state.project.selectedGestureId=null;setStateLabel('READY');Store.markDirty();renderAll();MobileUI?.open?.('canvas')
+}
+function clearAndStartFreshGesture(){
+  const g=selectedGesture(),hasWork=!!(g||state.capture.current.length||state.live.samples.length||state.project.layers.length||state.project.compare.enabled||state.project.crossMap.enabled||state.project.composition.enabled);
+  if(hasWork&&!confirm('Clear the current screen and start a new gesture? This keeps the project and existing library gestures.'))return;clearCurrentGestureState()
+}
+
 const MobileUI={
   active:'canvas',
   isMobile(){return matchMedia('(max-width:680px)').matches},
@@ -2035,7 +2049,7 @@ const MobileUI={
     this.label(titled(left,'Capture'),'capture');this.label(titled(left,'Style'),'style');this.label(titled(left,'Gesture Library'),'library');this.label(titled(left,'LIVE'),'more');this.label(titled(left,'Project'),'more');
     this.label(titled(right,'Motion Character'),'insights');this.label(titled(right,'Summary'),'insights');this.label(titled(right,'Capture Quality'),'insights');this.label(titled(right,'Character Map'),'insights');if(details)details.dataset.mobileSection='more';
     document.querySelectorAll('[data-mobile-panel]').forEach(b=>b.onclick=()=>this.open(b.dataset.mobilePanel));
-    els.mobileRecordBtn.onclick=()=>els.recordBtn.click();
+    els.mobileRecordBtn.onclick=()=>els.recordBtn.click();els.mobileClearBtn.onclick=clearAndStartFreshGesture;
     addEventListener('resize',()=>{if(!this.isMobile())this.closePanels();else this.syncRecord()});
     this.open('canvas');this.syncRecord()
   },
@@ -2056,7 +2070,7 @@ const MobileUI={
 
 function bind(){
   els.undoBtn.onclick=()=>UndoManager.undo();els.redoBtn.onclick=()=>UndoManager.redo();
-  els.recordBtn.onclick=()=>CaptureEngine.arm();
+  els.recordBtn.onclick=()=>CaptureEngine.arm();els.clearGestureBtn.onclick=clearAndStartFreshGesture;
   document.querySelectorAll('[data-source]').forEach(b=>b.onclick=()=>SourceManager.set(b.dataset.source));
   els.importMotionBtn.onclick=()=>els.motionDataFile.click();els.motionDataFile.onchange=async()=>{const f=els.motionDataFile.files[0];if(!f)return;try{await ImportEngine.file(f)}catch(e){alert('Could not import motion data: '+e.message)}els.motionDataFile.value=''};
   els.requestSensor.onclick=()=>SensorEngine.enable();els.startCamera.onclick=()=>CameraEngine.start();els.stopCamera.onclick=()=>CameraEngine.stop();els.sampleCameraColor.onclick=()=>CameraEngine.sampleColor();els.cameraTracker.onchange=()=>{state.camera.prevFrame=null;els.signalReadout.textContent='Camera tracker: '+els.cameraTracker.options[els.cameraTracker.selectedIndex].text};
