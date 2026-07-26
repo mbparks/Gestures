@@ -1,4 +1,4 @@
-# GESTURE v5.0 — Stable Release
+# GESTURE v5.4 — Stable Release
 
 GESTURE is a browser-native motion-to-mark Field Instrument. It records not only where movement goes, but how it happens: speed, hesitation, acceleration, jerk, repetition, rhythm, pressure, direction, curvature, and supported physical motion signals.
 
@@ -206,3 +206,46 @@ v5.0 fixes a mobile bottom-sheet routing defect that could make controls appear 
 - LIVE status remains visible on mobile.
 - SAVE WINDOW and SAVE PERFORMANCE now report when too few live samples exist.
 - SVG export now has a visible status target and fallback reporter.
+
+
+## Desktop action fix — v5.1
+
+A real Chromium runtime test found the SVG exporter was failing on an obsolete `ExportPreflight` reference. v5.1 replaces that with the existing `ReleaseReadiness.preflight()` path.
+
+A global action toast now reports:
+- SVG download success
+- SVG preflight/runtime failure
+- missing gesture/scene
+- SAVE WINDOW success or insufficient samples
+- SAVE PERFORMANCE success or insufficient samples
+
+
+## Deep control cleanup — v5.2
+
+- Removed LIVE as an input source; LIVE DRAW is now only a mode.
+- START LIVE DRAW is the only LIVE start/stop action; top-bar LIVE TOOLS only navigates.
+- Removed duplicate Start Preview, Enable Sensors, advanced Import Motion, and Sample Center controls.
+- Renamed project JSON action to Export Project JSON to distinguish it from autosave.
+- Context-dependent controls now disable when prerequisites are missing and expose tooltip reasons.
+- Added runtime ControlAudit after binding to detect unbound static buttons and legacy duplicate controls in the user's browser.
+- Added global runtime error/rejection feedback so failed actions surface visibly instead of silently.
+
+
+## Trace Color consolidation — v5.3
+
+Trace Color now has a single visible interaction model in Easy and Advanced modes.
+
+- Preset swatches are the primary trace-color control.
+- **CUSTOM…** opens the native browser color picker only when needed.
+- The always-visible rectangular color picker is removed from both layouts.
+- The currently selected preset receives an active outline.
+- Easy and Advanced still edit the same underlying `traceColor` property.
+
+
+## Workflow navigation + video export discoverability — v5.4
+
+- MOVE / CAPTURE / SIMPLIFY / STYLIZE / EXPORT are now actual buttons.
+- Each workflow button opens or scrolls to the controls for that stage.
+- EXPORT switches to Advanced as needed, opens the Export section, and brings it into view.
+- Playback Video controls were moved out of Animation and into the main Export section.
+- There is still only one `EXPORT PLAYBACK VIDEO` action; it was relocated, not duplicated.
