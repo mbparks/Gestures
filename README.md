@@ -1,4 +1,4 @@
-# GESTURE v6.4 — Stable Release
+# GESTURE v6.5 — Stable Release
 
 GESTURE is a browser-native motion-to-mark Field Instrument. It records not only where movement goes, but how it happens: speed, hesitation, acceleration, jerk, repetition, rhythm, pressure, direction, curvature, and supported physical motion signals.
 
@@ -386,3 +386,21 @@ Mobile also uses a one-row canvas grid while the Easy controls float as the coll
 - Play now calls the real `PlaybackEngine.playPause()` API.
 - Edit and export controls disable until a gesture exists.
 - Record, Clear, Auto Style, Play, and exports now provide explicit feedback/status.
+
+
+## Camera capture trace fix — v6.5
+
+Easy Mode hid the Advanced **Lock Target** control, but camera RECORD still required a locked Color Target. That made preview/tracking appear healthy while capture could never start from Easy Mode.
+
+v6.5 removes that hidden dependency.
+
+### Easy camera flow
+1. Select **CAMERA**.
+2. Tap the target to trace.
+3. Press **RECORD**.
+4. Move the tracked target.
+5. Press **STOP & SAVE**.
+
+A selected or confidently tracked point is enough for Easy capture. **Lock Target** remains an optional Advanced stability control.
+
+Camera capture now also reports live sample count/confidence while recording and gives explicit success/failure feedback when stopped.

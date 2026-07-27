@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>GESTURE v6.4 — Motion Instrument</title>
+<title>GESTURE v6.5 — Motion Instrument</title>
 <style>
 :root{
   --bg:#0c0f12; --panel:#11161b; --panel2:#171d23; --line:#2b343d; --text:#eef3f7; --muted:#95a3af;
@@ -511,8 +511,8 @@ body.easy .topbar .badge{color:var(--accent)}
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">GESTURE</div><div class="version">v6.4</div>
-  <div class="project-name" id="projectTitle">Untitled Project</div><span class="badge">EASY CONTROL FIX</span><button id="undoBtn" title="Undo processed/project change">↶</button><button id="redoBtn" title="Redo processed/project change">↷</button>
+  <div class="brand">GESTURE</div><div class="version">v6.5</div>
+  <div class="project-name" id="projectTitle">Untitled Project</div><span class="badge">CAMERA CAPTURE FIX</span><button id="undoBtn" title="Undo processed/project change">↶</button><button id="redoBtn" title="Redo processed/project change">↷</button>
   <div class="spacer"></div>
   <div class="save" id="saveStatus"><span class="save-dot"></span><span>Saved</span></div>
   <button id="liveBtn" title="Open LIVE controls">LIVE TOOLS</button><div class="mode-toggle"><button id="easyBtn" class="active">EASY</button><button id="advBtn">ADVANCED</button></div>
@@ -1062,7 +1062,7 @@ body.easy .topbar .badge{color:var(--accent)}
 (() => {
 'use strict';
 
-const APP_VERSION='6.4';
+const APP_VERSION='6.5';
 const STORAGE_KEY='gesture-field-instrument-v1';
 const RECOVERY_KEY='gesture-field-instrument-recovery-v36';
 const SVG_NS='http://www.w3.org/2000/svg';
@@ -1480,11 +1480,20 @@ const SensorEngine={
 };
 const CameraEngine={
   async start(){
-    if(state.camera.stream){this.restore();els.cameraStage.classList.remove('hidden');els.signalReadout.textContent='Camera ready. Tap a target, lock it, then press RECORD.';this.updateTargetStatus();return true}
+    if(state.camera.stream){
+      this.restore();els.cameraStage.classList.remove('hidden');
+      const msg=document.body.classList.contains('easy')?'Camera ready. Tap the target to trace, then press RECORD.':'Camera ready. Tap a target; Lock Target is optional for stability.';
+      els.signalReadout.textContent=msg;if(els.easyCaptureStatus&&document.body.classList.contains('easy'))els.easyCaptureStatus.textContent=msg;
+      this.updateTargetStatus();return true
+    }
     try{
       if(!navigator.mediaDevices?.getUserMedia)throw Error('getUserMedia is not supported in this browser');
       state.camera.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});state.camera.prevFrame=null;els.webcamVideo.srcObject=state.camera.stream;this.restore();els.cameraStage.classList.remove('hidden');try{await els.webcamVideo.play()}catch(e){}
-      els.signalReadout.textContent='Camera ready. Tap a target, lock it, then press RECORD.';this.updateTargetStatus();this.loop();return true
+      {
+        const msg=document.body.classList.contains('easy')?'Camera ready. Tap the target to trace, then press RECORD.':'Camera ready. Tap a target; Lock Target is optional for stability.';
+        els.signalReadout.textContent=msg;if(els.easyCaptureStatus&&document.body.classList.contains('easy'))els.easyCaptureStatus.textContent=msg
+      }
+      this.updateTargetStatus();this.loop();return true
     }catch(e){state.camera.stream=null;els.webcamVideo.srcObject=null;els.cameraStage.classList.add('hidden');els.signalReadout.textContent='Camera unavailable: '+e.message;return false}
   },
   stop(){
@@ -1496,7 +1505,13 @@ const CameraEngine={
     ctx.drawImage(v,0,0,c.width,c.height);const sx=clamp(Math.round(x),2,c.width-3),sy=clamp(Math.round(y),2,c.height-3),d=ctx.getImageData(sx-2,sy-2,5,5).data;let r=0,g=0,b=0,n=0;
     for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];n++}
     state.camera.targetColor=[r/n,g/n,b/n];state.camera.targetSelected=true;state.camera.targetLocked=false;state.camera.targetConfidence=0;state.camera.lastPoint={t:0,x:sx/c.width*1000,y:sy/c.height*700,pressure:0,source:'camera-color',confidence:1};
-    els.cameraTracker.value='color';els.lockCameraTarget.classList.remove('active');els.lockCameraTarget.textContent='LOCK TARGET';els.signalReadout.textContent=`Target sampled · RGB ${state.camera.targetColor.map(v=>Math.round(v)).join(', ')}. Press LOCK TARGET.`;this.updateTargetStatus()
+    els.cameraTracker.value='color';els.lockCameraTarget.classList.remove('active');els.lockCameraTarget.textContent='LOCK TARGET';
+    const msg=document.body.classList.contains('easy')
+      ?`Target selected · RGB ${state.camera.targetColor.map(v=>Math.round(v)).join(', ')} · press RECORD`
+      :`Target sampled · RGB ${state.camera.targetColor.map(v=>Math.round(v)).join(', ')}. Lock Target is optional.`;
+    els.signalReadout.textContent=msg;
+    if(els.easyCaptureStatus&&document.body.classList.contains('easy')){els.easyCaptureStatus.textContent='Target selected. Press RECORD to trace it.';EasyMobileSheet?.sync?.('capture',els.easyCaptureStatus.textContent)}
+    this.updateTargetStatus()
   },
   sampleColor(){const c=els.webcamOverlay;this.sampleAt(c.width/2,c.height/2)},
   toggleLock(){
@@ -1531,7 +1546,19 @@ const CameraEngine={
       }
       state.camera.prevFrame=new Uint8ClampedArray(data);ctx.clearRect(0,0,c.width,c.height);const confidence=clamp(best/255,0,1);state.camera.targetConfidence=confidence;ctx.strokeStyle=confidence>=.6?'#16c784':confidence>=.3?'#ffb020':'#ff4d4d';ctx.lineWidth=2;ctx.beginPath();ctx.arc(bx,by,9,0,Math.PI*2);ctx.stroke();ctx.fillStyle=ctx.strokeStyle;ctx.font='10px ui-monospace';ctx.fillText(`${Math.round(confidence*100)}%`,bx+12,by-10);
       const s={t:0,x:bx/c.width*1000,y:by/c.height*700,pressure:0,source:'camera-'+mode,confidence};state.camera.lastPoint=s;this.updateTargetStatus();els.signalReadout.textContent=`Camera ${mode} · ${Math.round(confidence*100)}% confidence · ${state.camera.targetLocked?'target locked':'target unlocked'}`;
-      if(state.capture.recording&&state.capture.sourceMode==='camera'){s.t=performance.now()-state.capture.startTime;const last=state.capture.current.at(-1);if(!last||s.t-last.t>25){state.capture.current.push({...s});renderLiveCapture()}}
+      if(state.capture.recording&&state.capture.sourceMode==='camera'){
+        s.t=performance.now()-state.capture.startTime;
+        const last=state.capture.current.at(-1);
+        const moved=!last||Math.hypot(s.x-last.x,s.y-last.y)>.35;
+        if((!last||s.t-last.t>25)&&confidence>=.08){
+          state.capture.current.push({...s});
+          if(moved||state.capture.current.length<3)renderLiveCapture()
+        }
+        if(els.easyCaptureStatus&&document.body.classList.contains('easy')){
+          els.easyCaptureStatus.textContent=`Recording camera · ${state.capture.current.length} samples · ${Math.round(confidence*100)}% confidence`;
+          EasyMobileSheet?.sync?.('capture',els.easyCaptureStatus.textContent)
+        }
+      }
       if(state.live.enabled&&state.capture.sourceMode==='camera'){s.t=performance.now()-state.live.startTime;LiveEngine.push({...s})}
     }
     state.camera.raf=requestAnimationFrame(()=>this.loop())
@@ -1643,13 +1670,43 @@ const CaptureEngine={
     if(mode==='import'){els.motionDataFile.click();return}
     if(mode==='sensor'){if(state.sensor.recording){SensorEngine.stop();return}state.capture.armed=true;SensorEngine.enable().then(ok=>{if(ok){SensorEngine.start();els.recordBtn.classList.add('recording')}else state.capture.armed=false});setWorkflow('capture');return}
     if(mode==='camera'){
-      if(!state.capture.recording&&els.cameraTracker.value==='color'&&!state.camera.targetLocked){els.signalReadout.textContent=state.camera.targetSelected?'Press LOCK TARGET before recording.':'Tap a target in the camera preview, then press LOCK TARGET.';setStateLabel('TARGET NOT LOCKED');return}
+      if(!state.capture.recording&&els.cameraTracker.value==='color'&&!state.camera.targetLocked){
+        const conf=Number(state.camera.targetConfidence||state.camera.lastPoint?.confidence||0);
+        const usable=state.camera.targetSelected||(
+          state.camera.lastPoint&&conf>=.2
+        );
+        if(!usable){
+          const msg='Tap a visible target in the camera preview, then press RECORD.';
+          els.signalReadout.textContent=msg;
+          if(els.easyCaptureStatus)els.easyCaptureStatus.textContent=msg;
+          EasyMobileSheet?.sync?.('capture',msg);
+          setStateLabel('TARGET NEEDED');
+          actionFeedback('Camera is ready — tap the target you want to trace first.','warn');
+          return
+        }
+        // Easy camera capture accepts an actively tracked point without requiring
+        // the Advanced-only Lock Target control.
+        if(document.body.classList.contains('easy')){
+          els.signalReadout.textContent=`Camera target ready · ${Math.round(conf*100)}% confidence · auto tracking`;
+          if(els.easyCaptureStatus)els.easyCaptureStatus.textContent='Camera target ready. Recording will follow the tracked point.';
+          EasyMobileSheet?.sync?.('capture','Camera target ready. Recording will follow the tracked point.')
+        }
+      }
       if(state.capture.recording){
         const raw=state.capture.current.slice();
         state.capture.recording=false;state.capture.armed=false;
         els.recordBtn.classList.remove('recording');els.recordBtn.textContent='RECORD';if(els.easyRecord)els.easyRecord.textContent='RECORD';
-        if(raw.length>=3){setStateLabel('CAPTURED');this.commit(raw,'camera','Camera Gesture')}
-        else{state.capture.current=[];setStateLabel('CAMERA READY');renderAll();els.signalReadout.textContent='Camera recorded fewer than 3 tracked samples. Check tracker confidence or target visibility and try again.'}
+        if(raw.length>=3){
+          setStateLabel('CAPTURED');this.commit(raw,'camera','Camera Gesture');
+          if(els.easyCaptureStatus){els.easyCaptureStatus.textContent=`Camera gesture captured · ${raw.length} samples`;EasyMobileSheet?.sync?.('capture',els.easyCaptureStatus.textContent)}
+          actionFeedback(`Camera gesture captured · ${raw.length} samples`,'ok')
+        }
+        else{
+          state.capture.current=[];setStateLabel('CAMERA READY');renderAll();
+          const msg='Camera recorded fewer than 3 tracked samples. Keep the target visible and move it while recording.';
+          els.signalReadout.textContent=msg;if(els.easyCaptureStatus)els.easyCaptureStatus.textContent=msg;EasyMobileSheet?.sync?.('capture',msg);
+          actionFeedback('No camera trace captured — move the tracked target while recording.','warn')
+        }
         CameraEngine.hidePreview();
         return
       }
@@ -1664,7 +1721,13 @@ const CaptureEngine={
         }
         state.capture.armed=true;state.capture.recording=true;state.capture.startTime=performance.now();state.capture.current=[];
         els.recordBtn.classList.add('recording');els.recordBtn.textContent='STOP & SAVE';if(els.easyRecord)els.easyRecord.textContent='STOP & SAVE';
-        setStateLabel('RECORDING CAMERA');MobileUI?.syncRecord?.()
+        setStateLabel('RECORDING CAMERA');
+        if(els.easyCaptureStatus&&document.body.classList.contains('easy')){
+          els.easyCaptureStatus.textContent='Recording camera — move the tracked target.';
+          EasyMobileSheet?.sync?.('capture',els.easyCaptureStatus.textContent);
+          actionFeedback('Camera recording active — move the tracked target.','ok')
+        }
+        MobileUI?.syncRecord?.()
       });
       return
     }
